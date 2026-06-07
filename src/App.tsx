@@ -342,6 +342,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen">
+      <button onClick={() => window.close()} className="fixed top-3 left-3 z-50 flex items-center gap-1 bg-white/90 backdrop-blur-sm shadow border border-gray-200 rounded-full pl-2 pr-3 py-1.5 text-sm font-medium text-gray-500 hover:text-gray-800 hover:shadow-md transition-all" title="關閉並回主頁">🏠 <span className="text-xs">主頁</span></button>
       {/* Header */}
       <header className="bg-[#060e1a]/90 border-b border-blue-900/20 sticky top-0 z-10 backdrop-blur-md">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
