@@ -61,7 +61,7 @@ function buildSupportLevels(price: number, ohlcv: OHLCV[], ind: Indicators | nul
 export default function App() {
   const watchlist = useWatchlist();
   const alerts = useAlerts();
-  const [tab, setTab] = useState<Tab>('stock');
+  const [tab, setTab] = useState<Tab>('market');
   const [priceLoading, setPriceLoading] = useState(false);
   const [fundLoading, setFundLoading] = useState(false);
   const [stockInfo, setStockInfo] = useState<StockInfo | null>(null);
@@ -320,6 +320,7 @@ export default function App() {
   };
 
   useEffect(() => {
+    loadMarket('^TWII');
     loadStock(localStorage.getItem('stockiq_last_symbol') ?? '2330');
   }, []);
 
