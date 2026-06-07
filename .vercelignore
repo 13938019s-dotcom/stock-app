@@ -1,0 +1,10 @@
+api/yahoo/
+api/twse/
+api/tpex/
+api/finmind/
+api/groq/
+api/gnews/
+api/test.ts
+vercel.json.bak
+scripts/
+logs/

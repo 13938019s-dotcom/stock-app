@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/api/:service/:path+", "destination": "/api/:service?__p=:path" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
