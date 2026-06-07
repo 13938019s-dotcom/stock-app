@@ -76,6 +76,7 @@ export default function App() {
   const [chartLoading, setChartLoading] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [mktLoading, setMktLoading] = useState(false);
+  const [mktError, setMktError] = useState<string | null>(null);
   const [mktSymbol, setMktSymbol] = useState('^TWII');
   const [mktOhlcv, setMktOhlcv] = useState<OHLCV[]>([]);
   const [mktIndicators, setMktIndicators] = useState<Indicators | null>(null);
@@ -103,6 +104,7 @@ export default function App() {
     setTab('market');
     setMktLoading(true);
     setMktSymbol(sym);
+    setMktError(null);
     setError(null);
     try {
       const { info, ohlcv: data } = await fetchPriceData(sym);
@@ -111,7 +113,7 @@ export default function App() {
       setMktIndicators(ind);
       setMktInfo(info);
     } catch (e) {
-      setError(e instanceof Error ? e.message : '指數資料載入失敗');
+      setMktError(e instanceof Error ? e.message : '大盤資料載入失敗');
     } finally {
       setMktLoading(false);
     }
@@ -579,6 +581,17 @@ export default function App() {
         {tab === 'market' && (
           <>
             <IndexBar activeSymbol={mktSymbol} onSelect={loadMarket} />
+            {mktError && (
+              <div className="bg-red-950/60 border border-red-800/50 rounded-xl px-5 py-4 text-sm text-red-300 flex items-center justify-between">
+                <span>⚠️ {mktError}</span>
+                <button
+                  onClick={() => loadMarket(mktSymbol)}
+                  className="ml-4 px-3 py-1 text-xs rounded-lg bg-red-800/40 hover:bg-red-700/50 text-red-200 border border-red-700/40 transition-colors"
+                >
+                  重試
+                </button>
+              </div>
+            )}
             {mktInfo && <StockHeader info={mktInfo} />}
             <MarketOverview ohlcv={mktOhlcv} indicators={mktIndicators!} loading={mktLoading} />
             {mktOhlcv.length > 0 && mktIndicators && (

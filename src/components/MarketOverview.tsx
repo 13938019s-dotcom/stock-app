@@ -59,6 +59,11 @@ export function MarketOverview({ ohlcv, indicators, loading }: Props) {
   const bias20 = indicators.bias20[last];
   const bias60 = indicators.bias60[last];
 
+  const daysSinceLatest = Math.floor(
+    (Date.now() - new Date(latestLight.date + '-01').getTime()) / 86400000
+  );
+  const isStale = daysSinceLatest > 35;
+
   return (
     <div className="space-y-4">
       {/* 景氣燈號 */}
@@ -69,6 +74,11 @@ export function MarketOverview({ ohlcv, indicators, loading }: Props) {
             最新 {lights[0].date} ｜ 每月約26日發布，有新資料請告知 Claude 更新
           </span>
         </div>
+        {isStale && (
+          <div className="mb-3 flex items-center gap-2 rounded-lg border border-yellow-700/40 bg-yellow-950/30 px-3 py-2 text-xs text-yellow-400">
+            ⚠ 距上次更新已超過 35 天，可能有新月份資料，請告知 Claude 最新分數
+          </div>
+        )}
         <div className="flex flex-wrap gap-3 mb-3">
           {lights.slice(0, 6).map((l, i) => {
             const cfg = LIGHT_CONFIG[l.light];
