@@ -119,7 +119,7 @@ export default function App() {
     }
   };
 
-  const loadStock = async (symbol: string) => {
+  const loadStock = async (symbol: string, { switchTab = true }: { switchTab?: boolean } = {}) => {
     const isIndex = symbol.trim().startsWith('^');
 
     if (isIndex) {
@@ -128,7 +128,7 @@ export default function App() {
     }
 
     localStorage.setItem('stockiq_last_symbol', symbol.trim());
-    setTab('stock');
+    if (switchTab) setTab('stock');
     setChartPeriod('1y');
     setPriceLoading(true);
     setFundLoading(true);
@@ -323,7 +323,7 @@ export default function App() {
 
   useEffect(() => {
     loadMarket('^TWII');
-    loadStock(localStorage.getItem('stockiq_last_symbol') ?? '2330');
+    loadStock(localStorage.getItem('stockiq_last_symbol') ?? '2330', { switchTab: false });
   }, []);
 
   const loading = priceLoading;
