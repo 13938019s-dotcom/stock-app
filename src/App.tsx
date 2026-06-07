@@ -342,11 +342,17 @@ export default function App() {
 
   return (
     <div className="min-h-screen">
-      <button onClick={() => window.close()} className="fixed top-3 left-3 z-50 flex items-center gap-1 bg-white/90 backdrop-blur-sm shadow border border-gray-200 rounded-full pl-2 pr-3 py-1.5 text-sm font-medium text-gray-500 hover:text-gray-800 hover:shadow-md transition-all" title="關閉並回主頁">🏠 <span className="text-xs">主頁</span></button>
       {/* Header */}
       <header className="bg-[#060e1a]/90 border-b border-blue-900/20 sticky top-0 z-10 backdrop-blur-md">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => window.close()}
+              title="關閉並回主頁"
+              className="flex items-center gap-1.5 bg-slate-800/70 hover:bg-blue-950/80 border border-slate-700/40 hover:border-blue-700/50 rounded-lg px-2.5 py-1.5 text-slate-400 hover:text-blue-300 transition-all text-xs font-medium shrink-0"
+            >
+              🏠 <span>主頁</span>
+            </button>
             <div className="flex flex-col leading-tight">
               <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
                 📊 StockIQ
