@@ -65,9 +65,14 @@ export async function fetchQuote(symbol: string): Promise<{ price: number; chang
     const r = await fetch(`${BASE}/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=5d`);
     if (!r.ok) return null;
     const json = await r.json();
-    const meta = json.chart?.result?.[0]?.meta;
+    const result = json.chart?.result?.[0];
+    const meta = result?.meta;
     if (!meta?.regularMarketPrice) return null;
-    const prev = meta.regularMarketPreviousClose ?? meta.regularMarketPrice;
+    const q = result?.indicators?.quote?.[0];
+    const closes: number[] = (q?.close ?? []).filter((c: number | null) => c != null && c > 0);
+    const prev = meta.regularMarketPreviousClose
+      ?? closes[closes.length - 2]
+      ?? meta.regularMarketPrice;
     return {
       price: meta.regularMarketPrice as number,
       changePercent: ((meta.regularMarketPrice - prev) / prev) * 100,
