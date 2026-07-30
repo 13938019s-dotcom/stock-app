@@ -69,7 +69,17 @@ export function MarketOverview({ ohlcv, indicators, loading }: Props) {
       {/* 景氣燈號 */}
       <div className={CARD}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-slate-200">🚦 景氣燈號</h3>
+          <h3 className="font-semibold text-slate-200 flex items-center gap-2">
+            🚦 景氣燈號
+            <a
+              href="https://index.ndc.gov.tw/n/zh_tw"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-normal text-blue-400 hover:text-blue-300 underline underline-offset-2"
+            >
+              國發會景氣指標查詢網 ↗
+            </a>
+          </h3>
           <span className="text-xs text-slate-600">
             最新 {lights[0].date} ｜ 每月約26日發布，有新資料請告知 Claude 更新
           </span>
