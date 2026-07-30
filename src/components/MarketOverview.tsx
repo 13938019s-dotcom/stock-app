@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import type { OHLCV, Indicators, EconomicLight } from '../types/stock';
+import type { OHLCV, Indicators } from '../types/stock';
 import { calcFibonacci } from '../utils/indicators';
 import { MainChart } from './MainChart';
+import { useEconomicLights } from '../hooks/useEconomicLights';
 
 interface Props {
   ohlcv: OHLCV[];
@@ -17,28 +18,24 @@ const LIGHT_CONFIG: Record<string, { bg: string; dot: string; label: string }> =
   blue:         { bg: 'bg-blue-950/50 border-blue-800/40',       dot: 'bg-blue-500',   label: '藍燈 (景氣衰退)' },
 };
 
-const STATIC_LIGHTS: EconomicLight[] = [
-  { date: '2026-04', score: 39, light: 'red',          lightLabel: '紅燈' },
-  { date: '2026-03', score: 39, light: 'red',          lightLabel: '紅燈' },
-  { date: '2026-02', score: 41, light: 'red',          lightLabel: '紅燈' },
-  { date: '2026-01', score: 39, light: 'red',          lightLabel: '紅燈' },
-  { date: '2025-12', score: 38, light: 'red',          lightLabel: '紅燈' },
-  { date: '2025-11', score: 37, light: 'yellow-red',   lightLabel: '黃紅燈' },
-  { date: '2025-10', score: 35, light: 'yellow-red',   lightLabel: '黃紅燈' },
-  { date: '2025-09', score: 34, light: 'yellow-red',   lightLabel: '黃紅燈' },
-  { date: '2025-08', score: 31, light: 'green',        lightLabel: '綠燈' },
-  { date: '2025-07', score: 29, light: 'green',        lightLabel: '綠燈' },
-  { date: '2025-06', score: 29, light: 'green',        lightLabel: '綠燈' },
-  { date: '2025-05', score: 31, light: 'green',        lightLabel: '綠燈' },
-  { date: '2025-04', score: 33, light: 'yellow-red',   lightLabel: '黃紅燈' },
-  { date: '2025-03', score: 33, light: 'yellow-red',   lightLabel: '黃紅燈' },
-];
-
 const CARD = 'bg-[#0c1628] rounded-xl border border-slate-700/40 p-5 shadow-[0_4px_24px_rgba(0,0,0,0.4)]';
 
 export function MarketOverview({ ohlcv, indicators, loading }: Props) {
   const [showFib, setShowFib] = useState(false);
-  const lights = STATIC_LIGHTS;
+  const [showAddLight, setShowAddLight] = useState(false);
+  const [newDate, setNewDate] = useState('');
+  const [newScore, setNewScore] = useState('');
+  const { lights, add: addLight, remove: removeLight, customDates } = useEconomicLights();
+
+  const handleAddLight = (e: React.FormEvent) => {
+    e.preventDefault();
+    const score = Number(newScore);
+    if (!newDate || Number.isNaN(score)) return;
+    addLight(newDate, score);
+    setNewDate('');
+    setNewScore('');
+    setShowAddLight(false);
+  };
 
   if (loading || ohlcv.length === 0) {
     return (
@@ -79,11 +76,47 @@ export function MarketOverview({ ohlcv, indicators, loading }: Props) {
             >
               國發會景氣指標查詢網 ↗
             </a>
+            <button
+              type="button"
+              onClick={() => setShowAddLight(v => !v)}
+              title="新增月份"
+              className="w-5 h-5 rounded-full bg-slate-700/60 hover:bg-slate-600 text-slate-300 text-sm leading-none flex items-center justify-center transition-colors"
+            >
+              +
+            </button>
           </h3>
           <span className="text-xs text-slate-600">
             最新 {lights[0].date} ｜ 每月約26日發布，有新資料請告知 Claude 更新
           </span>
         </div>
+        {showAddLight && (
+          <form onSubmit={handleAddLight} className="mb-3 flex flex-wrap items-end gap-2 rounded-lg border border-slate-700/40 bg-slate-800/40 p-3">
+            <label className="text-xs text-slate-400">
+              月份
+              <input
+                type="month"
+                value={newDate}
+                onChange={e => setNewDate(e.target.value)}
+                required
+                className="block mt-1 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm text-slate-200"
+              />
+            </label>
+            <label className="text-xs text-slate-400">
+              綜合判斷分數
+              <input
+                type="number"
+                min={9}
+                max={45}
+                value={newScore}
+                onChange={e => setNewScore(e.target.value)}
+                required
+                className="block mt-1 bg-slate-900 border border-slate-700 rounded px-2 py-1 text-sm text-slate-200 w-24"
+              />
+            </label>
+            <button type="submit" className="px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium">新增</button>
+            <button type="button" onClick={() => setShowAddLight(false)} className="px-3 py-1.5 rounded border border-slate-600 text-slate-400 text-xs hover:text-slate-200">取消</button>
+          </form>
+        )}
         {isStale && (
           <div className="mb-3 flex items-center gap-2 rounded-lg border border-yellow-700/40 bg-yellow-950/30 px-3 py-2 text-xs text-yellow-400">
             ⚠ 距上次更新已超過 35 天，可能有新月份資料，請告知 Claude 最新分數
@@ -92,8 +125,19 @@ export function MarketOverview({ ohlcv, indicators, loading }: Props) {
         <div className="flex flex-wrap gap-3 mb-3">
           {lights.slice(0, 6).map((l, i) => {
             const cfg = LIGHT_CONFIG[l.light];
+            const isCustom = customDates.has(l.date);
             return (
-              <div key={l.date} className={`rounded-lg border px-4 py-3 flex items-center gap-3 ${cfg.bg} ${i === 0 ? 'ring-1 ring-blue-500/40 shadow-[0_0_12px_rgba(59,130,246,0.15)]' : ''}`}>
+              <div key={l.date} className={`relative rounded-lg border px-4 py-3 flex items-center gap-3 ${cfg.bg} ${i === 0 ? 'ring-1 ring-blue-500/40 shadow-[0_0_12px_rgba(59,130,246,0.15)]' : ''}`}>
+                {isCustom && (
+                  <button
+                    type="button"
+                    onClick={() => removeLight(l.date)}
+                    title="刪除"
+                    className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-slate-700 hover:bg-red-600 text-[10px] text-slate-300 flex items-center justify-center"
+                  >
+                    ×
+                  </button>
+                )}
                 <div className={`w-4 h-4 rounded-full ${cfg.dot} shadow-[0_0_6px_currentColor]`} />
                 <div>
                   <div className="text-xs font-medium text-slate-300">{l.date}</div>
