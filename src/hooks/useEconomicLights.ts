@@ -21,7 +21,7 @@ export function scoreToLight(score: number): EconomicLight['light'] {
 }
 
 export const BASE_LIGHTS: EconomicLight[] = [
-  { date: '2026-04', score: 39, light: 'red',        lightLabel: '紅燈' },
+  { date: '2026-04', score: 41, light: 'red',        lightLabel: '紅燈' },
   { date: '2026-03', score: 39, light: 'red',        lightLabel: '紅燈' },
   { date: '2026-02', score: 41, light: 'red',        lightLabel: '紅燈' },
   { date: '2026-01', score: 39, light: 'red',        lightLabel: '紅燈' },
