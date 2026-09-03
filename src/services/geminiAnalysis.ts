@@ -1,7 +1,7 @@
 import { enqueueGemini } from './geminiQueue';
 
 const API_KEY = import.meta.env.VITE_GROQ_API_KEY as string | undefined;
-const MODEL = 'llama-3.3-70b-versatile';
+const MODEL = 'openai/gpt-oss-120b';
 const URL = '/api/groq/openai/v1/chat/completions';
 const LS_PREFIX = 'stockiq_insight_';
 const LS_TTL = 24 * 60 * 60 * 1000;
@@ -138,7 +138,7 @@ async function fetchInsight(p: Params): Promise<CompanyInsight | null> {
         model: MODEL,
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.4,
-        max_tokens: 1300,
+        max_tokens: 2000,
       }),
     });
     if (!res.ok) {
