@@ -1,6 +1,5 @@
 import { enqueueGemini } from './geminiQueue';
 
-const API_KEY = import.meta.env.VITE_GROQ_API_KEY as string | undefined;
 const MODEL = 'openai/gpt-oss-120b';
 const URL = '/api/groq/openai/v1/chat/completions';
 const LS_PREFIX = 'stockiq_insight_';
@@ -73,10 +72,6 @@ interface Params {
 }
 
 export async function getCompanyInsight(p: Params): Promise<CompanyInsight | null> {
-  if (!API_KEY) {
-    console.error('[AI] VITE_GROQ_API_KEY 未設定，請確認 .env 並重啟 dev server');
-    return null;
-  }
   if (memCache.has(p.symbol)) return memCache.get(p.symbol)!;
   const cached = loadLS(p.symbol);
   if (cached) { memCache.set(p.symbol, cached); return cached; }
@@ -132,7 +127,6 @@ async function fetchInsight(p: Params): Promise<CompanyInsight | null> {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`,
       },
       body: JSON.stringify({
         model: MODEL,

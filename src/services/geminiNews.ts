@@ -1,7 +1,6 @@
 import { enqueueGemini } from './geminiQueue';
 
-const API_KEY = import.meta.env.VITE_GROQ_API_KEY as string | undefined;
-const MODEL = 'llama-3.3-70b-versatile';
+const MODEL = 'openai/gpt-oss-120b';
 const URL = '/api/groq/openai/v1/chat/completions';
 
 export interface AISummary {
@@ -16,7 +15,7 @@ export async function getNewsSummary(
   symbol: string,
   newsTitles: string[],
 ): Promise<AISummary | null> {
-  if (!API_KEY || newsTitles.length === 0) return null;
+  if (newsTitles.length === 0) return null;
 
   const titles = newsTitles.slice(0, 8);
   const cacheKey = `${symbol}::${titles.join('|')}`;
@@ -40,13 +39,12 @@ ${titles.map((t, i) => `${i + 1}. ${t}`).join('\n')}
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${API_KEY}`,
         },
         body: JSON.stringify({
           model: MODEL,
           messages: [{ role: 'user', content: prompt }],
           temperature: 0.3,
-          max_tokens: 600,
+          max_tokens: 1000,
         }),
       });
       if (!res.ok) return null;
