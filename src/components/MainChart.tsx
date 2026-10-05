@@ -161,8 +161,10 @@ export function MainChart({ ohlcv, indicators, fibLevels = [], showFib = false, 
     // ── Pane 3: KD ────────────────────────────────────────────────────────────
     if (showKD) {
       const kdPane = chart.addPane();
+      const rsvSeries = kdPane.addSeries(LineSeries, { color: '#64748b', lineWidth: 1, priceLineVisible: false, lastValueVisible: true, crosshairMarkerVisible: true });
       const kSeries = kdPane.addSeries(LineSeries, { color: '#f59e0b', lineWidth: 2, priceLineVisible: false, lastValueVisible: true, crosshairMarkerVisible: true });
       const dSeries = kdPane.addSeries(LineSeries, { color: '#3b82f6', lineWidth: 2, priceLineVisible: false, lastValueVisible: true, crosshairMarkerVisible: true });
+      rsvSeries.setData(indicators.kdRsv.map((v, i) => !isNaN(v) ? { time: ohlcv[i].date as any, value: v } : null).filter(Boolean) as any);
       kSeries.setData(indicators.kdK.map((v, i) => !isNaN(v) ? { time: ohlcv[i].date as any, value: v } : null).filter(Boolean) as any);
       dSeries.setData(indicators.kdD.map((v, i) => !isNaN(v) ? { time: ohlcv[i].date as any, value: v } : null).filter(Boolean) as any);
       kSeries.createPriceLine({ price: 80, color: '#ef4444', lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: true, title: '80' });
@@ -263,9 +265,10 @@ export function MainChart({ ohlcv, indicators, fibLevels = [], showFib = false, 
           className="flex flex-wrap items-center gap-3 w-full text-left hover:text-slate-400 transition-colors"
         >
           <span className={`text-slate-500 font-medium w-24 flex-shrink-0 flex items-center gap-1 ${!showKD && 'opacity-50'}`}>
-            <span className={`inline-block transition-transform text-[10px] ${showKD ? '' : '-rotate-90'}`}>▾</span>KD (9)
+            <span className={`inline-block transition-transform text-[10px] ${showKD ? '' : '-rotate-90'}`}>▾</span>RSV + KD (9)
           </span>
           {showKD && (<>
+            <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-slate-500 inline-block" />RSV</span>
             <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-amber-400 inline-block" />K</span>
             <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-blue-500 inline-block" />D</span>
             <span className="text-red-400/70">┄ 80 超買</span>

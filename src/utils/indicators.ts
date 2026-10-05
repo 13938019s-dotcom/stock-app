@@ -44,10 +44,10 @@ function calcMACD(closes: number[]) {
 }
 
 function calcKD(highs: number[], lows: number[], closes: number[], period = 9) {
-  const K: number[] = [], D: number[] = [];
+  const K: number[] = [], D: number[] = [], RSV: number[] = [];
   let prevK = 50, prevD = 50;
   closes.forEach((close, i) => {
-    if (i < period - 1) { K.push(NaN); D.push(NaN); return; }
+    if (i < period - 1) { K.push(NaN); D.push(NaN); RSV.push(NaN); return; }
     const highSlice = highs.slice(i - period + 1, i + 1);
     const lowSlice = lows.slice(i - period + 1, i + 1);
     const highest = Math.max(...highSlice);
@@ -55,10 +55,10 @@ function calcKD(highs: number[], lows: number[], closes: number[], period = 9) {
     const rsv = highest === lowest ? 50 : ((close - lowest) / (highest - lowest)) * 100;
     const k = prevK * (2 / 3) + rsv * (1 / 3);
     const d = prevD * (2 / 3) + k * (1 / 3);
-    K.push(k); D.push(d);
+    K.push(k); D.push(d); RSV.push(rsv);
     prevK = k; prevD = d;
   });
-  return { K, D };
+  return { K, D, RSV };
 }
 
 function calcRSI(closes: number[], period = 14): (number | null)[] {
@@ -109,7 +109,7 @@ export function calcAllIndicators(ohlcv: OHLCV[]): Indicators {
   const ma60 = calcMA(closes, 60);
   const bollinger = calcBollinger(closes);
   const { macdLine, signalLine, histogram } = calcMACD(closes);
-  const { K, D } = calcKD(highs, lows, closes);
+  const { K, D, RSV } = calcKD(highs, lows, closes);
   const rsi = calcRSI(closes);
   const bias20 = calcBIAS(closes, ma20);
   const bias60 = calcBIAS(closes, ma60);
@@ -121,7 +121,7 @@ export function calcAllIndicators(ohlcv: OHLCV[]): Indicators {
     bollingerLower: bollinger.lower,
     bollingerWidth: bollinger.width,
     macdLine, macdSignal: signalLine, macdHistogram: histogram,
-    kdK: K, kdD: D, rsi,
+    kdK: K, kdD: D, kdRsv: RSV, rsi,
     bias20, bias60,
   };
 }

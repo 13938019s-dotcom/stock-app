@@ -64,6 +64,7 @@ export interface Indicators {
   macdHistogram: (number | null)[];
   kdK: number[];
   kdD: number[];
+  kdRsv: number[];
   rsi: (number | null)[];
   bias20: (number | null)[];
   bias60: (number | null)[];
