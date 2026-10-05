@@ -12,8 +12,6 @@ import { SignalPanel } from './components/SignalPanel';
 import { RecommendationPanel } from './components/RecommendationPanel';
 import { WatchlistPanel } from './components/WatchlistPanel';
 import { MainChart } from './components/MainChart';
-import { MACDChart } from './components/MACDChart';
-import { KDRSIChart } from './components/KDRSIChart';
 import { PEBandChart } from './components/PEBandChart';
 import { RevenueChart } from './components/RevenueChart';
 import { fetchMonthRevenue } from './services/twseRevenue';
@@ -498,8 +496,9 @@ export default function App() {
               <>
                 <div className={CARD}>
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-semibold text-slate-300 text-sm">
-                      K 線 ＋ 均線 ＋ 布林通道
+                    <h3 className="font-semibold text-slate-300 text-sm flex items-center gap-1.5">
+                      K 線 ＋ 技術指標
+                      <InfoButton onClick={() => setInfoModal('macd')} />
                       {chartLoading && <span className="ml-2 text-xs text-slate-600 animate-pulse">載入中…</span>}
                     </h3>
                     <div className="flex gap-0.5 bg-slate-800/60 rounded-lg p-0.5 border border-slate-700/30">
@@ -565,16 +564,6 @@ export default function App() {
                     <RevenueChart data={revenueData} />
                   </CollapsibleCard>
                 )}
-                <CollapsibleCard
-                  title={<h3 className="font-semibold text-slate-300 text-sm">MACD (12, 26, 9)</h3>}
-                  extra={<InfoButton onClick={() => setInfoModal('macd')} />}
-                >
-                  <MACDChart ohlcv={ohlcv} indicators={indicators} />
-                </CollapsibleCard>
-                <CollapsibleCard title={<h3 className="font-semibold text-slate-300 text-sm">KD ＋ RSI ＋ 乖離率 BIAS</h3>}>
-                  <KDRSIChart ohlcv={ohlcv} indicators={indicators} />
-                </CollapsibleCard>
-
               </>
             )}
 
@@ -601,18 +590,6 @@ export default function App() {
             )}
             {mktInfo && <StockHeader info={mktInfo} />}
             <MarketOverview ohlcv={mktOhlcv} indicators={mktIndicators!} loading={mktLoading} />
-            {mktOhlcv.length > 0 && mktIndicators && (
-              <>
-                <div className={CARD}>
-                  <h3 className="font-semibold text-slate-300 text-sm mb-3">MACD (12, 26, 9)</h3>
-                  <MACDChart ohlcv={mktOhlcv} indicators={mktIndicators} />
-                </div>
-                <div className={CARD}>
-                  <h3 className="font-semibold text-slate-300 text-sm mb-3">KD ＋ RSI ＋ 乖離率 BIAS</h3>
-                  <KDRSIChart ohlcv={mktOhlcv} indicators={mktIndicators} />
-                </div>
-              </>
-            )}
           </>
         )}
 
