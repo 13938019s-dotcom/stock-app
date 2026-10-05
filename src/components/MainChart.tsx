@@ -294,6 +294,16 @@ export function MainChart({ ohlcv, indicators, fibLevels = [], showFib = false, 
           <span>圖表偵測到可能未還原的受益單位分割，歷史價格僅供參考</span>
         </div>
       )}
+      {latestSignals.length > 0 && (
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs mb-2 rounded-lg border border-slate-800/60 bg-slate-900/40 px-3 py-1.5">
+          <span className="text-slate-600 font-medium flex-shrink-0">最新K棒訊號</span>
+          {latestSignals.map(s => (
+            <span key={s.id} className={`leading-snug ${SIGNAL_TEXT_COLOR[s.type]}`}>
+              {s.icon} {s.title}
+            </span>
+          ))}
+        </div>
+      )}
       <div className="relative">
         <div ref={containerRef} />
         <div className="absolute inset-0 pointer-events-none z-20" style={{ left: 0 }}>
@@ -319,20 +329,6 @@ export function MainChart({ ohlcv, indicators, fibLevels = [], showFib = false, 
               <span className={`inline-block transition-transform ${p.show ? '' : '-rotate-90'}`}>▾</span>
             </button>
           ))}
-
-          {latestSignals.length > 0 && (
-            <div
-              className="absolute pointer-events-none rounded-lg border border-slate-700/50 bg-[#0c1628]/85 backdrop-blur-sm px-3 py-2 space-y-1"
-              style={{ top: 8, right: 64, maxWidth: '48%' }}
-            >
-              <div className="text-[10px] text-slate-600 font-medium mb-0.5">最新K棒訊號</div>
-              {latestSignals.map(s => (
-                <div key={s.id} className={`text-xs leading-snug ${SIGNAL_TEXT_COLOR[s.type]}`}>
-                  {s.icon} {s.title}
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </div>
     </div>
