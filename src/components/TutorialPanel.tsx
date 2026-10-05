@@ -167,9 +167,9 @@ export function TutorialPanel() {
                 <XAxis dataKey="i" type="number" domain={[0, 'dataMax']} hide />
                 <YAxis hide domain={['dataMin - 5', 'dataMax + 5']} />
                 <ReferenceLine x={maCrossIdx} stroke="#f59e0b" strokeDasharray="3 3" label={{ value: '黃金交叉', position: 'top', fill: '#f59e0b', fontSize: 10 }} />
-                <Line type="monotone" dataKey="price" stroke="#64748b" strokeWidth={1} dot={false} />
-                <Line type="monotone" dataKey="ma5" stroke="#f59e0b" strokeWidth={2} dot={false} />
-                <Line type="monotone" dataKey="ma20" stroke="#3b82f6" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="price" stroke="#64748b" strokeWidth={1} dot={false} isAnimationActive={false} />
+                <Line type="monotone" dataKey="ma5" stroke="#f59e0b" strokeWidth={2} dot={false} isAnimationActive={false} />
+                <Line type="monotone" dataKey="ma20" stroke="#3b82f6" strokeWidth={2} dot={false} isAnimationActive={false} />
               </LineChart>
             }
             rules={[
@@ -194,8 +194,8 @@ export function TutorialPanel() {
                 <Bar dataKey="hist" isAnimationActive={false} maxBarSize={10}>
                   {macdData.map((d, idx) => <Cell key={idx} fill={d.hist >= 0 ? 'rgba(239,68,68,0.6)' : 'rgba(34,197,94,0.6)'} />)}
                 </Bar>
-                <Line type="monotone" dataKey="macd" stroke="#3b82f6" strokeWidth={2} dot={false} />
-                <Line type="monotone" dataKey="signal" stroke="#ef4444" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="macd" stroke="#3b82f6" strokeWidth={2} dot={false} isAnimationActive={false} />
+                <Line type="monotone" dataKey="signal" stroke="#ef4444" strokeWidth={2} dot={false} isAnimationActive={false} />
               </ComposedChart>
             }
             rules={[
@@ -225,8 +225,8 @@ export function TutorialPanel() {
                 <ReferenceLine y={80} stroke="#ef4444" strokeDasharray="3 3" />
                 <ReferenceLine y={20} stroke="#22c55e" strokeDasharray="3 3" />
                 <ReferenceLine x={kdCrossIdx} stroke="#fbbf24" strokeDasharray="3 3" label={{ value: '低檔黃金交叉', position: 'top', fill: '#fbbf24', fontSize: 10 }} />
-                <Line type="monotone" dataKey="k" stroke="#f59e0b" strokeWidth={2} dot={false} />
-                <Line type="monotone" dataKey="d" stroke="#3b82f6" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="k" stroke="#f59e0b" strokeWidth={2} dot={false} isAnimationActive={false} />
+                <Line type="monotone" dataKey="d" stroke="#3b82f6" strokeWidth={2} dot={false} isAnimationActive={false} />
               </LineChart>
             }
             rules={[
@@ -249,7 +249,7 @@ export function TutorialPanel() {
                 <ReferenceArea y1={70} y2={100} fill="#ef4444" fillOpacity={0.07} />
                 <ReferenceLine y={70} stroke="#ef4444" strokeDasharray="3 3" />
                 <ReferenceLine y={30} stroke="#22c55e" strokeDasharray="3 3" />
-                <Line type="monotone" dataKey="rsi" stroke="#8b5cf6" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="rsi" stroke="#8b5cf6" strokeWidth={2} dot={false} isAnimationActive={false} />
               </LineChart>
             }
             rules={[
@@ -274,9 +274,9 @@ export function TutorialPanel() {
                 <YAxis hide domain={['dataMin - 3', 'dataMax + 3']} />
                 <ReferenceArea x1={squeezeStart} x2={squeezeEnd} fill="#f59e0b" fillOpacity={0.08} />
                 <ReferenceLine x={breakoutIdx} stroke="#34d399" strokeDasharray="3 3" label={{ value: '突破', position: 'top', fill: '#34d399', fontSize: 10 }} />
-                <Line type="monotone" dataKey="upper" stroke="#94a3b8" strokeDasharray="4 2" strokeWidth={1.5} dot={false} />
-                <Line type="monotone" dataKey="lower" stroke="#94a3b8" strokeDasharray="4 2" strokeWidth={1.5} dot={false} />
-                <Line type="monotone" dataKey="price" stroke="#38bdf8" strokeWidth={2.5} dot={false} />
+                <Line type="monotone" dataKey="upper" stroke="#94a3b8" strokeDasharray="4 2" strokeWidth={1.5} dot={false} isAnimationActive={false} />
+                <Line type="monotone" dataKey="lower" stroke="#94a3b8" strokeDasharray="4 2" strokeWidth={1.5} dot={false} isAnimationActive={false} />
+                <Line type="monotone" dataKey="price" stroke="#38bdf8" strokeWidth={2.5} dot={false} isAnimationActive={false} />
               </ComposedChart>
             }
             rules={[
@@ -299,7 +299,7 @@ export function TutorialPanel() {
                 <ReferenceLine y={0} stroke="#334155" />
                 <ReferenceLine y={10} stroke="#ef4444" strokeDasharray="3 3" label={{ value: '+10% 過熱', position: 'insideTopRight', fill: '#ef4444', fontSize: 9 }} />
                 <ReferenceLine y={-10} stroke="#22c55e" strokeDasharray="3 3" label={{ value: '-10% 過冷', position: 'insideBottomRight', fill: '#22c55e', fontSize: 9 }} />
-                <Line type="monotone" dataKey="bias" stroke="#60a5fa" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="bias" stroke="#60a5fa" strokeWidth={2} dot={false} isAnimationActive={false} />
               </LineChart>
             }
             rules={[
@@ -324,7 +324,7 @@ export function TutorialPanel() {
               <Bar yAxisId="vol" dataKey="vol" isAnimationActive={false} maxBarSize={14}>
                 {volData.map((d, idx) => <Cell key={idx} fill={d.up ? 'rgba(239,68,68,0.45)' : 'rgba(100,116,139,0.35)'} />)}
               </Bar>
-              <Line yAxisId="price" type="monotone" dataKey="price" stroke="#60a5fa" strokeWidth={2} dot={false} />
+              <Line yAxisId="price" type="monotone" dataKey="price" stroke="#60a5fa" strokeWidth={2} dot={false} isAnimationActive={false} />
             </ComposedChart>
           }
           rules={[
