@@ -73,6 +73,50 @@ const volData = [
   { i: 6, price: 106, vol: 25, up: false }, { i: 7, price: 108, vol: 19, up: true },
 ];
 
+// ── 型態學 Chart Patterns ──
+const headShouldersTopData = [
+  { i: 0, price: 100 }, { i: 1, price: 108 }, { i: 2, price: 101 }, { i: 3, price: 103 },
+  { i: 4, price: 116 }, { i: 5, price: 102 }, { i: 6, price: 104 }, { i: 7, price: 109 },
+  { i: 8, price: 102 }, { i: 9, price: 96 }, { i: 10, price: 91 }, { i: 11, price: 87 },
+];
+const hstNeckline = 102, hstBreakIdx = 9;
+
+const headShouldersBottomData = [
+  { i: 0, price: 100 }, { i: 1, price: 92 }, { i: 2, price: 99 }, { i: 3, price: 97 },
+  { i: 4, price: 84 }, { i: 5, price: 98 }, { i: 6, price: 96 }, { i: 7, price: 91 },
+  { i: 8, price: 98 }, { i: 9, price: 104 }, { i: 10, price: 109 }, { i: 11, price: 113 },
+];
+const hsbNeckline = 98, hsbBreakIdx = 9;
+
+const doubleTopData = [
+  { i: 0, price: 100 }, { i: 1, price: 112 }, { i: 2, price: 104 }, { i: 3, price: 105 },
+  { i: 4, price: 113 }, { i: 5, price: 103 }, { i: 6, price: 97 }, { i: 7, price: 92 },
+];
+const dtNeckline = 104, dtBreakIdx = 6;
+
+const doubleBottomData = [
+  { i: 0, price: 100 }, { i: 1, price: 88 }, { i: 2, price: 96 }, { i: 3, price: 95 },
+  { i: 4, price: 87 }, { i: 5, price: 97 }, { i: 6, price: 103 }, { i: 7, price: 108 },
+];
+const dbNeckline = 96, dbBreakIdx = 6;
+
+const triangleData = [
+  { i: 0, price: 108 }, { i: 1, price: 93 }, { i: 2, price: 104 }, { i: 3, price: 95 },
+  { i: 4, price: 101 }, { i: 5, price: 97 }, { i: 6, price: 99 }, { i: 7, price: 98 },
+  { i: 8, price: 104 }, { i: 9, price: 109 }, { i: 10, price: 114 },
+];
+const triUpperSeg = [{ x: 0, y: 108 }, { x: 7, y: 99 }] as const;
+const triLowerSeg = [{ x: 1, y: 93 }, { x: 7, y: 99 }] as const;
+const triBreakIdx = 8;
+
+const flagData = [
+  { i: 0, price: 90 }, { i: 1, price: 96 }, { i: 2, price: 104 }, { i: 3, price: 112 },
+  { i: 4, price: 118 }, { i: 5, price: 115 }, { i: 6, price: 112 }, { i: 7, price: 113 },
+  { i: 8, price: 110 }, { i: 9, price: 111 }, { i: 10, price: 119 }, { i: 11, price: 124 },
+  { i: 12, price: 128 },
+];
+const flagPoleEnd = 4, flagEnd = 9, flagBreakIdx = 10;
+
 function LessonCard({
   icon, title, formula, summary, rules, chart, warn,
 }: {
@@ -121,13 +165,14 @@ function LessonCard({
 }
 
 export function TutorialPanel() {
-  const [tab, setTab] = useState<'trend' | 'momentum' | 'volatility' | 'volume'>('trend');
+  const [tab, setTab] = useState<'trend' | 'momentum' | 'volatility' | 'volume' | 'pattern'>('trend');
 
   const CATS = [
     { key: 'trend' as const, label: '趨勢', icon: '📊' },
     { key: 'momentum' as const, label: '力道', icon: '⚡' },
     { key: 'volatility' as const, label: '波動', icon: '🌊' },
     { key: 'volume' as const, label: '量能', icon: '📦' },
+    { key: 'pattern' as const, label: '型態', icon: '📐' },
   ];
 
   return (
@@ -333,6 +378,132 @@ export function TutorialPanel() {
             { label: '價漲量縮（動能待確認）', tone: 'watch', desc: '上漲但量能不足，可能只是淺層反彈，追價前最好再觀察一天。' },
           ]}
         />
+      )}
+
+      {tab === 'pattern' && (
+        <>
+          <LessonCard
+            icon="📐"
+            title="頭肩頂 Head and Shoulders Top（空頭反轉）"
+            summary="上漲趨勢末端出現「左肩－頭－右肩」三個高點，中間頭部最高、左右肩膀高度相近，低點連成頸線。跌破頸線即視為反轉確立，是最經典的頭部反轉型態之一。"
+            chart={
+              <LineChart data={headShouldersTopData} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
+                <XAxis dataKey="i" type="number" domain={[0, 'dataMax']} hide />
+                <YAxis hide domain={['dataMin - 4', 'dataMax + 4']} />
+                <ReferenceLine y={hstNeckline} stroke="#94a3b8" strokeDasharray="4 2" label={{ value: '頸線', position: 'insideLeft', fill: '#94a3b8', fontSize: 9 }} />
+                <ReferenceLine x={hstBreakIdx} stroke="#ef4444" strokeDasharray="3 3" label={{ value: '跌破', position: 'top', fill: '#ef4444', fontSize: 10 }} />
+                <Line type="monotone" dataKey="price" stroke="#f87171" strokeWidth={2} dot={false} isAnimationActive={false} />
+              </LineChart>
+            }
+            rules={[
+              { label: '跌破頸線（確認訊號）', tone: 'sell', desc: '股價跌破左右低點連成的頸線，型態正式確立，常伴隨量能放大，是出場/放空訊號。' },
+              { label: '右肩無法過前高', tone: 'watch', desc: '右肩反彈高度低於頭部，代表買盤力道明顯轉弱，是型態成形前的警訊。' },
+              { label: '量縮頭部、量增跌破', tone: 'info', desc: '經典型態中，頭部成交量通常比左肩小，跌破頸線時則常伴隨放量，可信度較高。' },
+            ]}
+            warn="跌破頸線後常有「拉回測試頸線」的假反彈，不宜看到跌破就立刻搶短，可等拉回不過頸線再確認。"
+          />
+
+          <LessonCard
+            icon="📐"
+            title="頭肩底 Head and Shoulders Bottom（多頭反轉）"
+            summary="下跌趨勢末端出現「左肩－頭－右肩」三個低點，頭部最低、左右肩膀高度相近，高點連成頸線。突破頸線即視為落底反轉，是頭肩頂的鏡像型態。"
+            chart={
+              <LineChart data={headShouldersBottomData} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
+                <XAxis dataKey="i" type="number" domain={[0, 'dataMax']} hide />
+                <YAxis hide domain={['dataMin - 4', 'dataMax + 4']} />
+                <ReferenceLine y={hsbNeckline} stroke="#94a3b8" strokeDasharray="4 2" label={{ value: '頸線', position: 'insideLeft', fill: '#94a3b8', fontSize: 9 }} />
+                <ReferenceLine x={hsbBreakIdx} stroke="#34d399" strokeDasharray="3 3" label={{ value: '突破', position: 'top', fill: '#34d399', fontSize: 10 }} />
+                <Line type="monotone" dataKey="price" stroke="#4ade80" strokeWidth={2} dot={false} isAnimationActive={false} />
+              </LineChart>
+            }
+            rules={[
+              { label: '突破頸線（確認訊號）', tone: 'buy', desc: '股價突破左右高點連成的頸線，型態正式確立，是較積極的進場訊號，突破量越大越可信。' },
+              { label: '右肩無法破前低', tone: 'watch', desc: '右肩低點高於頭部，代表賣壓逐漸衰竭，是落底的早期跡象。' },
+              { label: '頸線反轉為支撐', tone: 'info', desc: '突破後的頸線常反過來成為支撐，拉回頸線不破可視為加碼點。' },
+            ]}
+          />
+
+          <LessonCard
+            icon="🗻"
+            title="M頭 雙重頂 Double Top（空頭反轉）"
+            summary="股價兩次測試同一高點附近都無法突破，形成兩個相近高點，中間夾一個回檔低點。跌破中間低點（頸線）即確認反轉，外觀像字母 M。"
+            chart={
+              <LineChart data={doubleTopData} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
+                <XAxis dataKey="i" type="number" domain={[0, 'dataMax']} hide />
+                <YAxis hide domain={['dataMin - 4', 'dataMax + 4']} />
+                <ReferenceLine y={dtNeckline} stroke="#94a3b8" strokeDasharray="4 2" label={{ value: '頸線', position: 'insideLeft', fill: '#94a3b8', fontSize: 9 }} />
+                <ReferenceLine x={dtBreakIdx} stroke="#ef4444" strokeDasharray="3 3" label={{ value: '跌破', position: 'top', fill: '#ef4444', fontSize: 10 }} />
+                <Line type="monotone" dataKey="price" stroke="#f87171" strokeWidth={2} dot={false} isAnimationActive={false} />
+              </LineChart>
+            }
+            rules={[
+              { label: '第二次高點量縮', tone: 'watch', desc: '第二個高點成交量通常比第一個小，代表追價意願降低，是上攻無力的訊號。' },
+              { label: '跌破頸線確認', tone: 'sell', desc: '跌破兩高點之間的低點（頸線），M頭正式成立，預估跌幅約等於頭部到頸線的高度。' },
+            ]}
+          />
+
+          <LessonCard
+            icon="🏔️"
+            title="W底 雙重底 Double Bottom（多頭反轉）"
+            summary="股價兩次測試同一低點附近都有支撐，形成兩個相近低點，中間夾一個反彈高點。突破中間高點（頸線）即確認落底，外觀像字母 W，是M頭的鏡像型態。"
+            chart={
+              <LineChart data={doubleBottomData} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
+                <XAxis dataKey="i" type="number" domain={[0, 'dataMax']} hide />
+                <YAxis hide domain={['dataMin - 4', 'dataMax + 4']} />
+                <ReferenceLine y={dbNeckline} stroke="#94a3b8" strokeDasharray="4 2" label={{ value: '頸線', position: 'insideLeft', fill: '#94a3b8', fontSize: 9 }} />
+                <ReferenceLine x={dbBreakIdx} stroke="#34d399" strokeDasharray="3 3" label={{ value: '突破', position: 'top', fill: '#34d399', fontSize: 10 }} />
+                <Line type="monotone" dataKey="price" stroke="#4ade80" strokeWidth={2} dot={false} isAnimationActive={false} />
+              </LineChart>
+            }
+            rules={[
+              { label: '第二次低點量縮', tone: 'watch', desc: '第二個低點下跌量通常比第一個小，代表賣壓減弱，是止跌的訊號。' },
+              { label: '突破頸線確認', tone: 'buy', desc: '突破兩低點之間的高點（頸線），W底正式成立，預估漲幅約等於頸線到底部的高度。' },
+            ]}
+          />
+
+          <LessonCard
+            icon="🔻"
+            title="三角形整理 Triangle（續勢型態）"
+            summary="價格高點一次比一次低、低點一次比一次高，波動幅度逐漸收斂成三角形，代表多空力道暫時平衡。方向未定，等實際突破後再判斷續勢方向。"
+            chart={
+              <LineChart data={triangleData} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
+                <XAxis dataKey="i" type="number" domain={[0, 'dataMax']} hide />
+                <YAxis hide domain={['dataMin - 4', 'dataMax + 4']} />
+                <ReferenceLine segment={triUpperSeg} stroke="#94a3b8" strokeDasharray="4 2" />
+                <ReferenceLine segment={triLowerSeg} stroke="#94a3b8" strokeDasharray="4 2" />
+                <ReferenceLine x={triBreakIdx} stroke="#34d399" strokeDasharray="3 3" label={{ value: '突破', position: 'top', fill: '#34d399', fontSize: 10 }} />
+                <Line type="monotone" dataKey="price" stroke="#38bdf8" strokeWidth={2} dot={false} isAnimationActive={false} />
+              </LineChart>
+            }
+            rules={[
+              { label: '收斂後放量突破', tone: 'buy', desc: '波動收斂到三角形末端後，伴隨成交量放大向上突破，視為續漲訊號。' },
+              { label: '向下跌破', tone: 'sell', desc: '若反而跌破下緣趨勢線，代表原本的漲勢動能耗盡，應留意反轉向下。' },
+              { label: '方向未定，勿提前猜測', tone: 'info', desc: '三角形本身是中繼型態，常見於上升或下降趨勢中段，突破前不易判斷方向，需等待確認。' },
+            ]}
+          />
+
+          <LessonCard
+            icon="🚩"
+            title="旗形 Flag（續勢型態）"
+            summary="急漲（或急跌）形成一根「旗桿」後，價格進入小幅反向傾斜的區間整理（旗面），消化獲利了結賣壓，之後通常延續原方向突破，繼續原趨勢。"
+            chart={
+              <LineChart data={flagData} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
+                <XAxis dataKey="i" type="number" domain={[0, 'dataMax']} hide />
+                <YAxis hide domain={['dataMin - 4', 'dataMax + 4']} />
+                <ReferenceArea x1={0} x2={flagPoleEnd} fill="#f59e0b" fillOpacity={0.07} />
+                <ReferenceArea x1={flagPoleEnd} x2={flagEnd} fill="#3b82f6" fillOpacity={0.08} />
+                <ReferenceLine x={flagBreakIdx} stroke="#34d399" strokeDasharray="3 3" label={{ value: '突破', position: 'top', fill: '#34d399', fontSize: 10 }} />
+                <Line type="monotone" dataKey="price" stroke="#38bdf8" strokeWidth={2} dot={false} isAnimationActive={false} />
+              </LineChart>
+            }
+            rules={[
+              { label: '旗桿（橘色區塊）', tone: 'info', desc: '急漲急跌段，通常伴隨爆量，是趨勢爆發的起點。' },
+              { label: '旗面整理（藍色區塊）', tone: 'watch', desc: '量能明顯縮小的緩步回檔/盤整，角度與主趨勢相反，整理時間不宜過長（一般數天到數週）。' },
+              { label: '突破延續原趨勢', tone: 'buy', desc: '放量突破旗面即延續原方向，理論目標價約為旗桿漲幅再疊加一次。' },
+            ]}
+            warn="整理時間拖太久、或跌破旗面反向趨勢線，型態可能失敗，不是每次旗形都會如教科書延續原趨勢。"
+          />
+        </>
       )}
     </div>
   );
