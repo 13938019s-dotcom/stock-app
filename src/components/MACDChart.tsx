@@ -16,16 +16,12 @@ const tooltipStyle = {
 };
 
 export function MACDChart({ ohlcv, indicators }: Props) {
-  const start = Math.max(0, ohlcv.length - 120);
-  const data = ohlcv.slice(start).map((d, ri) => {
-    const i = start + ri;
-    return {
-      date: d.date.slice(5),
-      macd: indicators.macdLine[i],
-      signal: indicators.macdSignal[i],
-      histogram: indicators.macdHistogram[i],
-    };
-  }).filter(d => d.macd !== null);
+  const data = ohlcv.map((d, i) => ({
+    date: d.date.slice(5),
+    macd: indicators.macdLine[i],
+    signal: indicators.macdSignal[i],
+    histogram: indicators.macdHistogram[i],
+  }));
 
   return (
     <div>
@@ -49,7 +45,10 @@ export function MACDChart({ ohlcv, indicators }: Props) {
           <ReferenceLine y={0} stroke="#1e293b" strokeWidth={1} />
           <Bar dataKey="histogram" isAnimationActive={false} maxBarSize={6}>
             {data.map((entry, i) => (
-              <Cell key={i} fill={(entry.histogram ?? 0) >= 0 ? 'rgba(239,68,68,0.6)' : 'rgba(34,197,94,0.6)'} />
+              <Cell
+                key={i}
+                fill={entry.histogram === null ? 'transparent' : entry.histogram >= 0 ? 'rgba(239,68,68,0.6)' : 'rgba(34,197,94,0.6)'}
+              />
             ))}
           </Bar>
           <Line type="monotone" dataKey="macd" stroke="#3b82f6" dot={false} strokeWidth={1.5} connectNulls isAnimationActive={false} />

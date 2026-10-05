@@ -16,22 +16,17 @@ const tooltipStyle = {
 };
 
 export function KDRSIChart({ ohlcv, indicators }: Props) {
-  const start = Math.max(0, ohlcv.length - 120);
-
-  const kdData = ohlcv.slice(start).map((d, ri) => {
-    const i = start + ri;
+  const kdData = ohlcv.map((d, i) => {
     const k = indicators.kdK[i];
     const dd = indicators.kdD[i];
     return { date: d.date.slice(5), K: isNaN(k) ? null : +k.toFixed(1), D: isNaN(dd) ? null : +dd.toFixed(1) };
   });
 
-  const rsiData = ohlcv.slice(start).map((d, ri) => {
-    const i = start + ri;
+  const rsiData = ohlcv.map((d, i) => {
     return { date: d.date.slice(5), RSI: indicators.rsi[i] !== null ? +indicators.rsi[i]!.toFixed(1) : null };
   });
 
-  const biasData = ohlcv.slice(start).map((d, ri) => {
-    const i = start + ri;
+  const biasData = ohlcv.map((d, i) => {
     return { date: d.date.slice(5), BIAS20: indicators.bias20[i], BIAS60: indicators.bias60[i] };
   });
 
