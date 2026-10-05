@@ -4,7 +4,7 @@ import {
   ColorType, LineStyle, createSeriesMarkers,
 } from 'lightweight-charts';
 import type { IChartApi } from 'lightweight-charts';
-import type { OHLCV, Indicators, FibLevel } from '../types/stock';
+import type { OHLCV, Indicators, FibLevel, TechnicalSignal } from '../types/stock';
 
 interface Props {
   ohlcv: OHLCV[];
@@ -13,12 +13,20 @@ interface Props {
   showFib?: boolean;
   showMACDCross?: boolean;
   showKDCross?: boolean;
+  signals?: TechnicalSignal[];
 }
+
+const SIGNAL_TEXT_COLOR: Record<TechnicalSignal['type'], string> = {
+  buy: 'text-red-300',
+  watch: 'text-blue-300',
+  warning: 'text-amber-300',
+  neutral: 'text-slate-400',
+};
 
 const PANE_HEIGHTS = { main: 320, volume: 80, rsi: 90, kd: 90, macd: 100, bias: 80 };
 const COLLAPSED_H = 22;
 
-export function MainChart({ ohlcv, indicators, fibLevels = [], showFib = false, showMACDCross = false, showKDCross = false }: Props) {
+export function MainChart({ ohlcv, indicators, fibLevels = [], showFib = false, showMACDCross = false, showKDCross = false, signals = [] }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
 
@@ -33,6 +41,15 @@ export function MainChart({ ohlcv, indicators, fibLevels = [], showFib = false, 
   const offsetKD = offsetRSI + (showRSI ? PANE_HEIGHTS.rsi : COLLAPSED_H);
   const offsetMACD = offsetKD + (showKD ? PANE_HEIGHTS.kd : COLLAPSED_H);
   const offsetBias = offsetMACD + (showMACD ? PANE_HEIGHTS.macd : COLLAPSED_H);
+
+  const latestSignals = useMemo(() => {
+    const order = ['趨勢', '力道', '波動', '量能'];
+    const byCategory = signals.reduce((acc, s) => {
+      if (!acc[s.category]) acc[s.category] = s;
+      return acc;
+    }, {} as Record<string, TechnicalSignal>);
+    return order.map(c => byCategory[c]).filter((s): s is TechnicalSignal => !!s);
+  }, [signals]);
 
   const hasPossibleSplit = useMemo(() => {
     for (let i = 1; i < ohlcv.length; i++) {
@@ -302,6 +319,20 @@ export function MainChart({ ohlcv, indicators, fibLevels = [], showFib = false, 
               <span className={`inline-block transition-transform ${p.show ? '' : '-rotate-90'}`}>▾</span>
             </button>
           ))}
+
+          {latestSignals.length > 0 && (
+            <div
+              className="absolute pointer-events-none rounded-lg border border-slate-700/50 bg-[#0c1628]/85 backdrop-blur-sm px-3 py-2 space-y-1"
+              style={{ top: 8, right: 64, maxWidth: '48%' }}
+            >
+              <div className="text-[10px] text-slate-600 font-medium mb-0.5">最新K棒訊號</div>
+              {latestSignals.map(s => (
+                <div key={s.id} className={`text-xs leading-snug ${SIGNAL_TEXT_COLOR[s.type]}`}>
+                  {s.icon} {s.title}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

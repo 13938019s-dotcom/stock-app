@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { fetchNewsForSymbol, formatNewsTime, isWithin3Days } from '../services/yahooNews';
 import type { NewsItem } from '../services/yahooNews';
+import { fetchGoogleNewsForSymbol } from '../services/googleNews';
 import { getNewsSummary } from '../services/geminiNews';
 import type { AISummary } from '../services/geminiNews';
 import { CollapsibleCard } from './CollapsibleCard';
@@ -32,7 +33,11 @@ export function StockNewsSection({ symbol, stockName }: Props) {
     setLoading(true);
     setAiLoading(false);
 
-    fetchNewsForSymbol(symbol, stockName)
+    const fetchNews = /\.TWO?$/i.test(symbol) || /^\d{4,6}$/.test(symbol)
+      ? fetchGoogleNewsForSymbol(symbol, stockName)
+      : fetchNewsForSymbol(symbol, stockName);
+
+    fetchNews
       .then(items => {
         if (cancelled) return;
         const top = items.slice(0, 6);

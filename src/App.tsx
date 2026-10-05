@@ -12,6 +12,7 @@ import { SignalPanel } from './components/SignalPanel';
 import { RecommendationPanel } from './components/RecommendationPanel';
 import { WatchlistPanel } from './components/WatchlistPanel';
 import { MainChart } from './components/MainChart';
+import { TutorialPanel } from './components/TutorialPanel';
 import { PEBandChart } from './components/PEBandChart';
 import { RevenueChart } from './components/RevenueChart';
 import { fetchMonthRevenue } from './services/twseRevenue';
@@ -33,7 +34,7 @@ import { useAlertPoller } from './hooks/useAlertPoller';
 import type { StockInfo, OHLCV, Indicators, TechnicalSignal, FundamentalCheck, FundamentalData } from './types/stock';
 import type { Recommendation } from './utils/recommendation';
 
-type Tab = 'stock' | 'market' | 'news' | 'scanner';
+type Tab = 'stock' | 'market' | 'news' | 'scanner' | 'tutorial';
 
 const CARD = 'bg-[#0c1628] rounded-xl border border-slate-700/40 p-5 shadow-[0_4px_24px_rgba(0,0,0,0.4)]';
 
@@ -381,6 +382,9 @@ export default function App() {
               <button onClick={() => setTab('scanner')} className={TAB_BTN(tab === 'scanner')}>
                 條件篩選
               </button>
+              <button onClick={() => setTab('tutorial')} className={TAB_BTN(tab === 'tutorial')}>
+                📚 教學
+              </button>
             </div>
           </div>
           <SearchBar ref={searchRef} onSearch={loadStock} loading={loading || mktLoading} />
@@ -395,7 +399,7 @@ export default function App() {
           </div>
         )}
 
-        {tab !== 'news' && tab !== 'scanner' && (
+        {tab !== 'news' && tab !== 'scanner' && tab !== 'tutorial' && (
           <WatchlistPanel
             items={watchlist.items}
             currentSymbol={stockInfo?.symbol ?? ''}
@@ -544,7 +548,7 @@ export default function App() {
                       ▲▼ KD 訊號
                     </button>
                   </div>
-                  <MainChart ohlcv={ohlcv} indicators={indicators} fibLevels={fibLevels} showFib={false} showMACDCross={showMACDCross} showKDCross={showKDCross} />
+                  <MainChart ohlcv={ohlcv} indicators={indicators} fibLevels={fibLevels} showFib={false} showMACDCross={showMACDCross} showKDCross={showKDCross} signals={signals} />
                 </div>
                 {fundamentalData?.trailingEps && fundamentalData.trailingEps > 0 && stockInfo && (
                   <CollapsibleCard
@@ -605,6 +609,9 @@ export default function App() {
             onSelectStock={(sym) => { setTab('stock'); loadStock(sym); }}
           />
         )}
+
+        {/* 教學 */}
+        {tab === 'tutorial' && <TutorialPanel />}
       </main>
 
       {/* Alert toast */}
