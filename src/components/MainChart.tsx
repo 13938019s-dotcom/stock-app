@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef, useMemo, useState } from 'react';
 import {
   createChart, CandlestickSeries, LineSeries, HistogramSeries,
   ColorType, LineStyle, createSeriesMarkers,
@@ -16,11 +16,16 @@ interface Props {
 }
 
 const PANE_HEIGHTS = { main: 320, volume: 80, rsi: 90, kd: 90, macd: 100, bias: 80 };
-const TOTAL_HEIGHT = Object.values(PANE_HEIGHTS).reduce((a, b) => a + b, 0);
 
 export function MainChart({ ohlcv, indicators, fibLevels = [], showFib = false, showMACDCross = false, showKDCross = false }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
+
+  const [showVolume, setShowVolume] = useState(true);
+  const [showRSI, setShowRSI] = useState(true);
+  const [showKD, setShowKD] = useState(true);
+  const [showMACD, setShowMACD] = useState(true);
+  const [showBias, setShowBias] = useState(true);
 
   const hasPossibleSplit = useMemo(() => {
     for (let i = 1; i < ohlcv.length; i++) {
@@ -32,6 +37,13 @@ export function MainChart({ ohlcv, indicators, fibLevels = [], showFib = false, 
   useEffect(() => {
     if (!containerRef.current || ohlcv.length === 0) return;
     const el = containerRef.current;
+
+    const totalHeight = PANE_HEIGHTS.main
+      + (showVolume ? PANE_HEIGHTS.volume : 0)
+      + (showRSI ? PANE_HEIGHTS.rsi : 0)
+      + (showKD ? PANE_HEIGHTS.kd : 0)
+      + (showMACD ? PANE_HEIGHTS.macd : 0)
+      + (showBias ? PANE_HEIGHTS.bias : 0);
 
     const chart = createChart(el, {
       layout: {
@@ -46,7 +58,7 @@ export function MainChart({ ohlcv, indicators, fibLevels = [], showFib = false, 
       timeScale: { borderColor: '#1e293b', timeVisible: true, rightOffset: 2, fixLeftEdge: true, fixRightEdge: true },
       crosshair: { mode: 1 },
       width: el.clientWidth,
-      height: TOTAL_HEIGHT,
+      height: totalHeight,
     });
     chartRef.current = chart;
 
@@ -120,64 +132,74 @@ export function MainChart({ ohlcv, indicators, fibLevels = [], showFib = false, 
     }
 
     // ── Pane 1: Volume ────────────────────────────────────────────────────────
-    const volPane = chart.addPane();
-    const vol = volPane.addSeries(HistogramSeries, { priceFormat: { type: 'volume' } });
-    vol.setData(ohlcv.map(d => ({
-      time: d.date as any,
-      value: d.volume,
-      color: d.close >= d.open ? 'rgba(239,68,68,0.5)' : 'rgba(34,197,94,0.5)',
-    })));
+    if (showVolume) {
+      const volPane = chart.addPane();
+      const vol = volPane.addSeries(HistogramSeries, { priceFormat: { type: 'volume' } });
+      vol.setData(ohlcv.map(d => ({
+        time: d.date as any,
+        value: d.volume,
+        color: d.close >= d.open ? 'rgba(239,68,68,0.5)' : 'rgba(34,197,94,0.5)',
+      })));
+      volPane.setStretchFactor(PANE_HEIGHTS.volume);
+    }
 
     // ── Pane 2: RSI ───────────────────────────────────────────────────────────
-    const rsiPane = chart.addPane();
-    const rsiSeries = rsiPane.addSeries(LineSeries, {
-      color: '#8b5cf6', lineWidth: 2,
-      priceLineVisible: false, lastValueVisible: true, crosshairMarkerVisible: true,
-    });
-    rsiSeries.setData(
-      indicators.rsi.map((v, i) => v !== null ? { time: ohlcv[i].date as any, value: v } : null).filter(Boolean) as any
-    );
-    rsiSeries.createPriceLine({ price: 70, color: '#ef4444', lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: true, title: '70' });
-    rsiSeries.createPriceLine({ price: 30, color: '#22c55e', lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: true, title: '30' });
+    if (showRSI) {
+      const rsiPane = chart.addPane();
+      const rsiSeries = rsiPane.addSeries(LineSeries, {
+        color: '#8b5cf6', lineWidth: 2,
+        priceLineVisible: false, lastValueVisible: true, crosshairMarkerVisible: true,
+      });
+      rsiSeries.setData(
+        indicators.rsi.map((v, i) => v !== null ? { time: ohlcv[i].date as any, value: v } : null).filter(Boolean) as any
+      );
+      rsiSeries.createPriceLine({ price: 70, color: '#ef4444', lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: true, title: '70' });
+      rsiSeries.createPriceLine({ price: 30, color: '#22c55e', lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: true, title: '30' });
+      rsiPane.setStretchFactor(PANE_HEIGHTS.rsi);
+    }
 
     // ── Pane 3: KD ────────────────────────────────────────────────────────────
-    const kdPane = chart.addPane();
-    const kSeries = kdPane.addSeries(LineSeries, { color: '#f59e0b', lineWidth: 2, priceLineVisible: false, lastValueVisible: true, crosshairMarkerVisible: true });
-    const dSeries = kdPane.addSeries(LineSeries, { color: '#3b82f6', lineWidth: 2, priceLineVisible: false, lastValueVisible: true, crosshairMarkerVisible: true });
-    kSeries.setData(indicators.kdK.map((v, i) => !isNaN(v) ? { time: ohlcv[i].date as any, value: v } : null).filter(Boolean) as any);
-    dSeries.setData(indicators.kdD.map((v, i) => !isNaN(v) ? { time: ohlcv[i].date as any, value: v } : null).filter(Boolean) as any);
-    kSeries.createPriceLine({ price: 80, color: '#ef4444', lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: true, title: '80' });
-    kSeries.createPriceLine({ price: 20, color: '#22c55e', lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: true, title: '20' });
+    if (showKD) {
+      const kdPane = chart.addPane();
+      const kSeries = kdPane.addSeries(LineSeries, { color: '#f59e0b', lineWidth: 2, priceLineVisible: false, lastValueVisible: true, crosshairMarkerVisible: true });
+      const dSeries = kdPane.addSeries(LineSeries, { color: '#3b82f6', lineWidth: 2, priceLineVisible: false, lastValueVisible: true, crosshairMarkerVisible: true });
+      kSeries.setData(indicators.kdK.map((v, i) => !isNaN(v) ? { time: ohlcv[i].date as any, value: v } : null).filter(Boolean) as any);
+      dSeries.setData(indicators.kdD.map((v, i) => !isNaN(v) ? { time: ohlcv[i].date as any, value: v } : null).filter(Boolean) as any);
+      kSeries.createPriceLine({ price: 80, color: '#ef4444', lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: true, title: '80' });
+      kSeries.createPriceLine({ price: 20, color: '#22c55e', lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: true, title: '20' });
+      kdPane.setStretchFactor(PANE_HEIGHTS.kd);
+    }
 
     // ── Pane 4: MACD ──────────────────────────────────────────────────────────
-    const macdPane = chart.addPane();
-    const macdHist = macdPane.addSeries(HistogramSeries, {});
-    macdHist.setData(
-      indicators.macdHistogram.map((v, i) => v !== null
-        ? { time: ohlcv[i].date as any, value: v, color: v >= 0 ? 'rgba(239,68,68,0.6)' : 'rgba(34,197,94,0.6)' }
-        : null).filter(Boolean) as any
-    );
-    const macdLineSeries = macdPane.addSeries(LineSeries, { color: '#3b82f6', lineWidth: 1, priceLineVisible: false, lastValueVisible: true, crosshairMarkerVisible: true });
-    const macdSignalSeries = macdPane.addSeries(LineSeries, { color: '#ef4444', lineWidth: 1, priceLineVisible: false, lastValueVisible: true, crosshairMarkerVisible: true });
-    macdLineSeries.setData(indicators.macdLine.map((v, i) => v !== null ? { time: ohlcv[i].date as any, value: v } : null).filter(Boolean) as any);
-    macdSignalSeries.setData(indicators.macdSignal.map((v, i) => v !== null ? { time: ohlcv[i].date as any, value: v } : null).filter(Boolean) as any);
-    macdLineSeries.createPriceLine({ price: 0, color: '#334155', lineWidth: 1, lineStyle: LineStyle.Solid, axisLabelVisible: false, title: '' });
+    if (showMACD) {
+      const macdPane = chart.addPane();
+      const macdHist = macdPane.addSeries(HistogramSeries, {});
+      macdHist.setData(
+        indicators.macdHistogram.map((v, i) => v !== null
+          ? { time: ohlcv[i].date as any, value: v, color: v >= 0 ? 'rgba(239,68,68,0.6)' : 'rgba(34,197,94,0.6)' }
+          : null).filter(Boolean) as any
+      );
+      const macdLineSeries = macdPane.addSeries(LineSeries, { color: '#3b82f6', lineWidth: 1, priceLineVisible: false, lastValueVisible: true, crosshairMarkerVisible: true });
+      const macdSignalSeries = macdPane.addSeries(LineSeries, { color: '#ef4444', lineWidth: 1, priceLineVisible: false, lastValueVisible: true, crosshairMarkerVisible: true });
+      macdLineSeries.setData(indicators.macdLine.map((v, i) => v !== null ? { time: ohlcv[i].date as any, value: v } : null).filter(Boolean) as any);
+      macdSignalSeries.setData(indicators.macdSignal.map((v, i) => v !== null ? { time: ohlcv[i].date as any, value: v } : null).filter(Boolean) as any);
+      macdLineSeries.createPriceLine({ price: 0, color: '#334155', lineWidth: 1, lineStyle: LineStyle.Solid, axisLabelVisible: false, title: '' });
+      macdPane.setStretchFactor(PANE_HEIGHTS.macd);
+    }
 
     // ── Pane 5: BIAS ──────────────────────────────────────────────────────────
-    const biasPane = chart.addPane();
-    const bias20Series = biasPane.addSeries(LineSeries, { color: '#60a5fa', lineWidth: 2, priceLineVisible: false, lastValueVisible: true, crosshairMarkerVisible: true });
-    const bias60Series = biasPane.addSeries(LineSeries, { color: '#a78bfa', lineWidth: 1, priceLineVisible: false, lastValueVisible: true, crosshairMarkerVisible: true });
-    bias20Series.setData(indicators.bias20.map((v, i) => v !== null ? { time: ohlcv[i].date as any, value: v } : null).filter(Boolean) as any);
-    bias60Series.setData(indicators.bias60.map((v, i) => v !== null ? { time: ohlcv[i].date as any, value: v } : null).filter(Boolean) as any);
-    bias20Series.createPriceLine({ price: 10, color: '#ef4444', lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: false, title: '' });
-    bias20Series.createPriceLine({ price: -10, color: '#22c55e', lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: false, title: '' });
+    if (showBias) {
+      const biasPane = chart.addPane();
+      const bias20Series = biasPane.addSeries(LineSeries, { color: '#60a5fa', lineWidth: 2, priceLineVisible: false, lastValueVisible: true, crosshairMarkerVisible: true });
+      const bias60Series = biasPane.addSeries(LineSeries, { color: '#a78bfa', lineWidth: 1, priceLineVisible: false, lastValueVisible: true, crosshairMarkerVisible: true });
+      bias20Series.setData(indicators.bias20.map((v, i) => v !== null ? { time: ohlcv[i].date as any, value: v } : null).filter(Boolean) as any);
+      bias60Series.setData(indicators.bias60.map((v, i) => v !== null ? { time: ohlcv[i].date as any, value: v } : null).filter(Boolean) as any);
+      bias20Series.createPriceLine({ price: 10, color: '#ef4444', lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: false, title: '' });
+      bias20Series.createPriceLine({ price: -10, color: '#22c55e', lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: false, title: '' });
+      biasPane.setStretchFactor(PANE_HEIGHTS.bias);
+    }
 
     chart.panes()[0].setStretchFactor(PANE_HEIGHTS.main);
-    volPane.setStretchFactor(PANE_HEIGHTS.volume);
-    rsiPane.setStretchFactor(PANE_HEIGHTS.rsi);
-    kdPane.setStretchFactor(PANE_HEIGHTS.kd);
-    macdPane.setStretchFactor(PANE_HEIGHTS.macd);
-    biasPane.setStretchFactor(PANE_HEIGHTS.bias);
 
     chart.timeScale().fitContent();
 
@@ -187,7 +209,7 @@ export function MainChart({ ohlcv, indicators, fibLevels = [], showFib = false, 
     ro.observe(el);
 
     return () => { ro.disconnect(); chart.remove(); };
-  }, [ohlcv, indicators, fibLevels, showFib, showMACDCross, showKDCross]);
+  }, [ohlcv, indicators, fibLevels, showFib, showMACDCross, showKDCross, showVolume, showRSI, showKD, showMACD, showBias]);
 
   return (
     <div>
@@ -211,35 +233,73 @@ export function MainChart({ ohlcv, indicators, fibLevels = [], showFib = false, 
         )}
       </div>
       <div className="space-y-1 text-xs text-slate-600 mb-2 border-t border-slate-800/60 pt-1.5">
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="text-slate-500 font-medium w-24 flex-shrink-0">成交量</span>
-          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-slate-500/50 inline-block" />成交量 ＋ 漲跌色</span>
-        </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="text-slate-500 font-medium w-24 flex-shrink-0">RSI (14)</span>
-          <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-purple-500 inline-block" />RSI</span>
-          <span className="text-red-400/70">┄ 70 超買</span>
-          <span className="text-emerald-500/70">┄ 30 超賣</span>
-        </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="text-slate-500 font-medium w-24 flex-shrink-0">KD (9)</span>
-          <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-amber-400 inline-block" />K</span>
-          <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-blue-500 inline-block" />D</span>
-          <span className="text-red-400/70">┄ 80 超買</span>
-          <span className="text-emerald-500/70">┄ 20 超賣</span>
-        </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="text-slate-500 font-medium w-24 flex-shrink-0">MACD (12,26,9)</span>
-          <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-blue-500 inline-block" />MACD</span>
-          <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-red-400 inline-block" />Signal</span>
-          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-red-500/40 inline-block" />柱狀</span>
-        </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="text-slate-500 font-medium w-24 flex-shrink-0">乖離率 BIAS</span>
-          <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-blue-400 inline-block" />BIAS(20)</span>
-          <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-purple-400 inline-block" />BIAS(60)</span>
-          <span className="text-amber-500/70">⚠ ±10% 警戒</span>
-        </div>
+        <button
+          type="button"
+          onClick={() => setShowVolume(v => !v)}
+          className="flex flex-wrap items-center gap-3 w-full text-left hover:text-slate-400 transition-colors"
+        >
+          <span className={`text-slate-500 font-medium w-24 flex-shrink-0 flex items-center gap-1 ${!showVolume && 'opacity-50'}`}>
+            <span className={`inline-block transition-transform text-[10px] ${showVolume ? '' : '-rotate-90'}`}>▾</span>成交量
+          </span>
+          {showVolume && <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-slate-500/50 inline-block" />成交量 ＋ 漲跌色</span>}
+        </button>
+        <button
+          type="button"
+          onClick={() => setShowRSI(v => !v)}
+          className="flex flex-wrap items-center gap-3 w-full text-left hover:text-slate-400 transition-colors"
+        >
+          <span className={`text-slate-500 font-medium w-24 flex-shrink-0 flex items-center gap-1 ${!showRSI && 'opacity-50'}`}>
+            <span className={`inline-block transition-transform text-[10px] ${showRSI ? '' : '-rotate-90'}`}>▾</span>RSI (14)
+          </span>
+          {showRSI && (<>
+            <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-purple-500 inline-block" />RSI</span>
+            <span className="text-red-400/70">┄ 70 超買</span>
+            <span className="text-emerald-500/70">┄ 30 超賣</span>
+          </>)}
+        </button>
+        <button
+          type="button"
+          onClick={() => setShowKD(v => !v)}
+          className="flex flex-wrap items-center gap-3 w-full text-left hover:text-slate-400 transition-colors"
+        >
+          <span className={`text-slate-500 font-medium w-24 flex-shrink-0 flex items-center gap-1 ${!showKD && 'opacity-50'}`}>
+            <span className={`inline-block transition-transform text-[10px] ${showKD ? '' : '-rotate-90'}`}>▾</span>KD (9)
+          </span>
+          {showKD && (<>
+            <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-amber-400 inline-block" />K</span>
+            <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-blue-500 inline-block" />D</span>
+            <span className="text-red-400/70">┄ 80 超買</span>
+            <span className="text-emerald-500/70">┄ 20 超賣</span>
+          </>)}
+        </button>
+        <button
+          type="button"
+          onClick={() => setShowMACD(v => !v)}
+          className="flex flex-wrap items-center gap-3 w-full text-left hover:text-slate-400 transition-colors"
+        >
+          <span className={`text-slate-500 font-medium w-24 flex-shrink-0 flex items-center gap-1 ${!showMACD && 'opacity-50'}`}>
+            <span className={`inline-block transition-transform text-[10px] ${showMACD ? '' : '-rotate-90'}`}>▾</span>MACD (12,26,9)
+          </span>
+          {showMACD && (<>
+            <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-blue-500 inline-block" />MACD</span>
+            <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-red-400 inline-block" />Signal</span>
+            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-red-500/40 inline-block" />柱狀</span>
+          </>)}
+        </button>
+        <button
+          type="button"
+          onClick={() => setShowBias(v => !v)}
+          className="flex flex-wrap items-center gap-3 w-full text-left hover:text-slate-400 transition-colors"
+        >
+          <span className={`text-slate-500 font-medium w-24 flex-shrink-0 flex items-center gap-1 ${!showBias && 'opacity-50'}`}>
+            <span className={`inline-block transition-transform text-[10px] ${showBias ? '' : '-rotate-90'}`}>▾</span>乖離率 BIAS
+          </span>
+          {showBias && (<>
+            <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-blue-400 inline-block" />BIAS(20)</span>
+            <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-purple-400 inline-block" />BIAS(60)</span>
+            <span className="text-amber-500/70">⚠ ±10% 警戒</span>
+          </>)}
+        </button>
       </div>
       {hasPossibleSplit && (
         <div className="flex items-center gap-1.5 text-xs text-amber-500/70 mb-1">
