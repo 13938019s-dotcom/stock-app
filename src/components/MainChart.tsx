@@ -234,39 +234,48 @@ export function MainChart({ ohlcv, indicators, fibLevels = [], showFib = false, 
           </span>
         )}
       </div>
-      <div className="space-y-1 text-xs text-slate-600 mb-2 border-t border-slate-800/60 pt-1.5">
-        <button
-          type="button"
-          onClick={() => setShowVolume(v => !v)}
-          className="flex flex-wrap items-center gap-3 w-full text-left hover:text-slate-400 transition-colors"
-        >
-          <span className={`text-slate-500 font-medium w-24 flex-shrink-0 flex items-center gap-1 ${!showVolume && 'opacity-50'}`}>
-            <span className={`inline-block transition-transform text-[10px] ${showVolume ? '' : '-rotate-90'}`}>▾</span>成交量
-          </span>
+      <div className="space-y-1.5 text-xs text-slate-600 mb-2 border-t border-slate-800/60 pt-2">
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setShowVolume(v => !v)}
+            title={showVolume ? '點擊收合' : '點擊展開'}
+            className={`flex items-center gap-1 px-2 py-0.5 rounded-md border font-medium transition-all ${
+              showVolume ? 'border-slate-600/50 text-slate-300 bg-slate-700/30 hover:bg-slate-700/50' : 'border-slate-700/40 text-slate-600 hover:text-slate-400'
+            }`}
+          >
+            <span className={`inline-block transition-transform text-[9px] ${showVolume ? '' : '-rotate-90'}`}>▾</span>成交量
+          </button>
           {showVolume && <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-slate-500/50 inline-block" />成交量 ＋ 漲跌色</span>}
-        </button>
-        <button
-          type="button"
-          onClick={() => setShowRSI(v => !v)}
-          className="flex flex-wrap items-center gap-3 w-full text-left hover:text-slate-400 transition-colors"
-        >
-          <span className={`text-slate-500 font-medium w-24 flex-shrink-0 flex items-center gap-1 ${!showRSI && 'opacity-50'}`}>
-            <span className={`inline-block transition-transform text-[10px] ${showRSI ? '' : '-rotate-90'}`}>▾</span>RSI (14)
-          </span>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setShowRSI(v => !v)}
+            title={showRSI ? '點擊收合' : '點擊展開'}
+            className={`flex items-center gap-1 px-2 py-0.5 rounded-md border font-medium transition-all ${
+              showRSI ? 'border-slate-600/50 text-slate-300 bg-slate-700/30 hover:bg-slate-700/50' : 'border-slate-700/40 text-slate-600 hover:text-slate-400'
+            }`}
+          >
+            <span className={`inline-block transition-transform text-[9px] ${showRSI ? '' : '-rotate-90'}`}>▾</span>RSI (14)
+          </button>
           {showRSI && (<>
             <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-purple-500 inline-block" />RSI</span>
             <span className="text-red-400/70">┄ 70 超買</span>
             <span className="text-emerald-500/70">┄ 30 超賣</span>
           </>)}
-        </button>
-        <button
-          type="button"
-          onClick={() => setShowKD(v => !v)}
-          className="flex flex-wrap items-center gap-3 w-full text-left hover:text-slate-400 transition-colors"
-        >
-          <span className={`text-slate-500 font-medium w-24 flex-shrink-0 flex items-center gap-1 ${!showKD && 'opacity-50'}`}>
-            <span className={`inline-block transition-transform text-[10px] ${showKD ? '' : '-rotate-90'}`}>▾</span>RSV + KD (9)
-          </span>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setShowKD(v => !v)}
+            title={showKD ? '點擊收合' : '點擊展開'}
+            className={`flex items-center gap-1 px-2 py-0.5 rounded-md border font-medium transition-all ${
+              showKD ? 'border-slate-600/50 text-slate-300 bg-slate-700/30 hover:bg-slate-700/50' : 'border-slate-700/40 text-slate-600 hover:text-slate-400'
+            }`}
+          >
+            <span className={`inline-block transition-transform text-[9px] ${showKD ? '' : '-rotate-90'}`}>▾</span>RSV + KD (9)
+          </button>
           {showKD && (<>
             <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-slate-500 inline-block" />RSV</span>
             <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-amber-400 inline-block" />K</span>
@@ -274,35 +283,41 @@ export function MainChart({ ohlcv, indicators, fibLevels = [], showFib = false, 
             <span className="text-red-400/70">┄ 80 超買</span>
             <span className="text-emerald-500/70">┄ 20 超賣</span>
           </>)}
-        </button>
-        <button
-          type="button"
-          onClick={() => setShowMACD(v => !v)}
-          className="flex flex-wrap items-center gap-3 w-full text-left hover:text-slate-400 transition-colors"
-        >
-          <span className={`text-slate-500 font-medium w-24 flex-shrink-0 flex items-center gap-1 ${!showMACD && 'opacity-50'}`}>
-            <span className={`inline-block transition-transform text-[10px] ${showMACD ? '' : '-rotate-90'}`}>▾</span>MACD (12,26,9)
-          </span>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setShowMACD(v => !v)}
+            title={showMACD ? '點擊收合' : '點擊展開'}
+            className={`flex items-center gap-1 px-2 py-0.5 rounded-md border font-medium transition-all ${
+              showMACD ? 'border-slate-600/50 text-slate-300 bg-slate-700/30 hover:bg-slate-700/50' : 'border-slate-700/40 text-slate-600 hover:text-slate-400'
+            }`}
+          >
+            <span className={`inline-block transition-transform text-[9px] ${showMACD ? '' : '-rotate-90'}`}>▾</span>MACD (12,26,9)
+          </button>
           {showMACD && (<>
             <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-blue-500 inline-block" />MACD</span>
             <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-red-400 inline-block" />Signal</span>
             <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-red-500/40 inline-block" />柱狀</span>
           </>)}
-        </button>
-        <button
-          type="button"
-          onClick={() => setShowBias(v => !v)}
-          className="flex flex-wrap items-center gap-3 w-full text-left hover:text-slate-400 transition-colors"
-        >
-          <span className={`text-slate-500 font-medium w-24 flex-shrink-0 flex items-center gap-1 ${!showBias && 'opacity-50'}`}>
-            <span className={`inline-block transition-transform text-[10px] ${showBias ? '' : '-rotate-90'}`}>▾</span>乖離率 BIAS
-          </span>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setShowBias(v => !v)}
+            title={showBias ? '點擊收合' : '點擊展開'}
+            className={`flex items-center gap-1 px-2 py-0.5 rounded-md border font-medium transition-all ${
+              showBias ? 'border-slate-600/50 text-slate-300 bg-slate-700/30 hover:bg-slate-700/50' : 'border-slate-700/40 text-slate-600 hover:text-slate-400'
+            }`}
+          >
+            <span className={`inline-block transition-transform text-[9px] ${showBias ? '' : '-rotate-90'}`}>▾</span>乖離率 BIAS
+          </button>
           {showBias && (<>
             <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-blue-400 inline-block" />BIAS(20)</span>
             <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-purple-400 inline-block" />BIAS(60)</span>
             <span className="text-amber-500/70">⚠ ±10% 警戒</span>
           </>)}
-        </button>
+        </div>
       </div>
       {hasPossibleSplit && (
         <div className="flex items-center gap-1.5 text-xs text-amber-500/70 mb-1">
