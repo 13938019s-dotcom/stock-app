@@ -279,7 +279,7 @@ export function MainChart({ ohlcv, indicators, fibLevels = [], showFib = false, 
       )}
       <div className="relative">
         <div ref={containerRef} />
-        <div className="absolute inset-0 pointer-events-none" style={{ left: 0 }}>
+        <div className="absolute inset-0 pointer-events-none z-20" style={{ left: 0 }}>
           {[
             { offset: offsetVolume, show: showVolume, toggle: () => setShowVolume(v => !v), label: '成交量' },
             { offset: offsetRSI, show: showRSI, toggle: () => setShowRSI(v => !v), label: 'RSI' },
