@@ -57,7 +57,6 @@ export function MainChart({ ohlcv, indicators, fibLevels = [], showFib = false, 
       wickUpColor: '#ef4444', wickDownColor: '#22c55e',
     });
     candle.setData(ohlcv.map(d => ({ time: d.date as any, open: d.open, high: d.high, low: d.low, close: d.close })));
-    chart.panes()[0].setHeight(PANE_HEIGHTS.main);
 
     if (showMACDCross || showKDCross) {
       type Marker = { time: string; position: 'aboveBar' | 'belowBar'; color: string; shape: 'arrowUp' | 'arrowDown'; text: string; size: number };
@@ -122,7 +121,6 @@ export function MainChart({ ohlcv, indicators, fibLevels = [], showFib = false, 
 
     // ── Pane 1: Volume ────────────────────────────────────────────────────────
     const volPane = chart.addPane();
-    volPane.setHeight(PANE_HEIGHTS.volume);
     const vol = volPane.addSeries(HistogramSeries, { priceFormat: { type: 'volume' } });
     vol.setData(ohlcv.map(d => ({
       time: d.date as any,
@@ -132,7 +130,6 @@ export function MainChart({ ohlcv, indicators, fibLevels = [], showFib = false, 
 
     // ── Pane 2: RSI ───────────────────────────────────────────────────────────
     const rsiPane = chart.addPane();
-    rsiPane.setHeight(PANE_HEIGHTS.rsi);
     const rsiSeries = rsiPane.addSeries(LineSeries, {
       color: '#8b5cf6', lineWidth: 2,
       priceLineVisible: false, lastValueVisible: true, crosshairMarkerVisible: true,
@@ -145,7 +142,6 @@ export function MainChart({ ohlcv, indicators, fibLevels = [], showFib = false, 
 
     // ── Pane 3: KD ────────────────────────────────────────────────────────────
     const kdPane = chart.addPane();
-    kdPane.setHeight(PANE_HEIGHTS.kd);
     const kSeries = kdPane.addSeries(LineSeries, { color: '#f59e0b', lineWidth: 2, priceLineVisible: false, lastValueVisible: true, crosshairMarkerVisible: true });
     const dSeries = kdPane.addSeries(LineSeries, { color: '#3b82f6', lineWidth: 2, priceLineVisible: false, lastValueVisible: true, crosshairMarkerVisible: true });
     kSeries.setData(indicators.kdK.map((v, i) => !isNaN(v) ? { time: ohlcv[i].date as any, value: v } : null).filter(Boolean) as any);
@@ -155,7 +151,6 @@ export function MainChart({ ohlcv, indicators, fibLevels = [], showFib = false, 
 
     // ── Pane 4: MACD ──────────────────────────────────────────────────────────
     const macdPane = chart.addPane();
-    macdPane.setHeight(PANE_HEIGHTS.macd);
     const macdHist = macdPane.addSeries(HistogramSeries, {});
     macdHist.setData(
       indicators.macdHistogram.map((v, i) => v !== null
@@ -170,13 +165,19 @@ export function MainChart({ ohlcv, indicators, fibLevels = [], showFib = false, 
 
     // ── Pane 5: BIAS ──────────────────────────────────────────────────────────
     const biasPane = chart.addPane();
-    biasPane.setHeight(PANE_HEIGHTS.bias);
     const bias20Series = biasPane.addSeries(LineSeries, { color: '#60a5fa', lineWidth: 2, priceLineVisible: false, lastValueVisible: true, crosshairMarkerVisible: true });
     const bias60Series = biasPane.addSeries(LineSeries, { color: '#a78bfa', lineWidth: 1, priceLineVisible: false, lastValueVisible: true, crosshairMarkerVisible: true });
     bias20Series.setData(indicators.bias20.map((v, i) => v !== null ? { time: ohlcv[i].date as any, value: v } : null).filter(Boolean) as any);
     bias60Series.setData(indicators.bias60.map((v, i) => v !== null ? { time: ohlcv[i].date as any, value: v } : null).filter(Boolean) as any);
     bias20Series.createPriceLine({ price: 10, color: '#ef4444', lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: false, title: '' });
     bias20Series.createPriceLine({ price: -10, color: '#22c55e', lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: false, title: '' });
+
+    chart.panes()[0].setStretchFactor(PANE_HEIGHTS.main);
+    volPane.setStretchFactor(PANE_HEIGHTS.volume);
+    rsiPane.setStretchFactor(PANE_HEIGHTS.rsi);
+    kdPane.setStretchFactor(PANE_HEIGHTS.kd);
+    macdPane.setStretchFactor(PANE_HEIGHTS.macd);
+    biasPane.setStretchFactor(PANE_HEIGHTS.bias);
 
     chart.timeScale().fitContent();
 
