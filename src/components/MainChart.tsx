@@ -210,16 +210,36 @@ export function MainChart({ ohlcv, indicators, fibLevels = [], showFib = false, 
           </span>
         )}
       </div>
-      <div className="flex flex-wrap gap-4 text-xs text-slate-600 mb-2 border-t border-slate-800/60 pt-1.5">
-        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-slate-500/50 inline-block" />成交量</span>
-        <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-purple-500 inline-block" />RSI(14) <span className="text-slate-700">30/70</span></span>
-        <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-amber-400 inline-block" />K</span>
-        <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-blue-500 inline-block" />D <span className="text-slate-700">20/80</span></span>
-        <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-blue-500 inline-block" />MACD</span>
-        <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-red-400 inline-block" />Signal</span>
-        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-red-500/40 inline-block" />柱狀</span>
-        <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-blue-400 inline-block" />BIAS(20)</span>
-        <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-purple-400 inline-block" />BIAS(60)</span>
+      <div className="space-y-1 text-xs text-slate-600 mb-2 border-t border-slate-800/60 pt-1.5">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="text-slate-500 font-medium w-24 flex-shrink-0">成交量</span>
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-slate-500/50 inline-block" />成交量 ＋ 漲跌色</span>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="text-slate-500 font-medium w-24 flex-shrink-0">RSI (14)</span>
+          <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-purple-500 inline-block" />RSI</span>
+          <span className="text-red-400/70">┄ 70 超買</span>
+          <span className="text-emerald-500/70">┄ 30 超賣</span>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="text-slate-500 font-medium w-24 flex-shrink-0">KD (9)</span>
+          <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-amber-400 inline-block" />K</span>
+          <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-blue-500 inline-block" />D</span>
+          <span className="text-red-400/70">┄ 80 超買</span>
+          <span className="text-emerald-500/70">┄ 20 超賣</span>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="text-slate-500 font-medium w-24 flex-shrink-0">MACD (12,26,9)</span>
+          <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-blue-500 inline-block" />MACD</span>
+          <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-red-400 inline-block" />Signal</span>
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-red-500/40 inline-block" />柱狀</span>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="text-slate-500 font-medium w-24 flex-shrink-0">乖離率 BIAS</span>
+          <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-blue-400 inline-block" />BIAS(20)</span>
+          <span className="flex items-center gap-1.5"><span className="w-5 h-0.5 bg-purple-400 inline-block" />BIAS(60)</span>
+          <span className="text-amber-500/70">⚠ ±10% 警戒</span>
+        </div>
       </div>
       {hasPossibleSplit && (
         <div className="flex items-center gap-1.5 text-xs text-amber-500/70 mb-1">
