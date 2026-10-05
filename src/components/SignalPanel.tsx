@@ -28,6 +28,7 @@ export function SignalPanel({ signals }: Props) {
     { key: '力道', label: '力道', icon: '⚡' },
     { key: '波動', label: '波動', icon: '🌊' },
     { key: '量能', label: '量能', icon: '📦' },
+    { key: '型態', label: '型態', icon: '📐' },
   ];
 
   return (
@@ -46,7 +47,7 @@ export function SignalPanel({ signals }: Props) {
           </div>
           <span className={`text-slate-500 text-sm transition-transform duration-200 ${open ? '' : '-rotate-90'}`}>▾</span>
         </div>
-        {open && <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+        {open && <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           {categories.map(({ key, label, icon }) => {
             const catSignals = byCategory[key] ?? [];
             const primary = catSignals[0];

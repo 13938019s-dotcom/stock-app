@@ -3,6 +3,7 @@ import { fetchPriceData, fetchOHLCV } from './services/yahooFinance';
 import { fetchTWRatios, getTWChineseName } from './services/twseApi';
 import { calcAllIndicators, calcFibonacci } from './utils/indicators';
 import { detectSignals } from './utils/signals';
+import { detectPatterns } from './utils/patterns';
 import { checkFundamentals } from './utils/fundamentals';
 import { calcRecommendation } from './utils/recommendation';
 import { SearchBar } from './components/SearchBar';
@@ -158,7 +159,7 @@ export default function App() {
       const { info, ohlcv: data } = priceResult.value;
       currentPrice = info.currentPrice;
       currentInd = calcAllIndicators(data);
-      currentSigs = detectSignals(data, currentInd);
+      currentSigs = [...detectSignals(data, currentInd), ...detectPatterns(data)];
       setStockInfo(info);
       setOhlcv(data);
       setIndicators(currentInd);
@@ -309,7 +310,7 @@ export default function App() {
     try {
       const data = await fetchOHLCV(symbol, cfg.interval, cfg.range);
       const ind = calcAllIndicators(data);
-      const sigs = detectSignals(data, ind);
+      const sigs = [...detectSignals(data, ind), ...detectPatterns(data)];
       setOhlcv(data);
       setIndicators(ind);
       setSignals(sigs);

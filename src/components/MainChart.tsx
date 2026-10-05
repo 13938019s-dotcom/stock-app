@@ -43,7 +43,7 @@ export function MainChart({ ohlcv, indicators, fibLevels = [], showFib = false, 
   const offsetBias = offsetMACD + (showMACD ? PANE_HEIGHTS.macd : COLLAPSED_H);
 
   const latestSignals = useMemo(() => {
-    const order = ['趨勢', '力道', '波動', '量能'];
+    const order = ['趨勢', '力道', '波動', '量能', '型態'];
     const byCategory = signals.reduce((acc, s) => {
       if (!acc[s.category]) acc[s.category] = s;
       return acc;

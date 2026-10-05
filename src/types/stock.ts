@@ -45,7 +45,7 @@ export interface FundamentalCheck {
 export interface TechnicalSignal {
   id: string;
   type: 'buy' | 'watch' | 'warning' | 'neutral';
-  category: '趨勢' | '力道' | '波動' | '量能';
+  category: '趨勢' | '力道' | '波動' | '量能' | '型態';
   icon: string;
   title: string;
   detail: string;
