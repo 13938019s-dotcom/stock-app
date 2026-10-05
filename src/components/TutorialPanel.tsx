@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  ComposedChart, LineChart, Line, Bar, Area, XAxis, YAxis,
+  ComposedChart, LineChart, Line, Bar, XAxis, YAxis,
   ReferenceLine, ReferenceArea, ResponsiveContainer, Cell,
 } from 'recharts';
 
@@ -274,10 +274,9 @@ export function TutorialPanel() {
                 <YAxis hide domain={['dataMin - 3', 'dataMax + 3']} />
                 <ReferenceArea x1={squeezeStart} x2={squeezeEnd} fill="#f59e0b" fillOpacity={0.08} />
                 <ReferenceLine x={breakoutIdx} stroke="#34d399" strokeDasharray="3 3" label={{ value: '突破', position: 'top', fill: '#34d399', fontSize: 10 }} />
-                <Area type="monotone" dataKey="upper" stroke="none" fill="#334155" fillOpacity={0.15} />
-                <Line type="monotone" dataKey="upper" stroke="#475569" strokeDasharray="4 2" strokeWidth={1} dot={false} />
-                <Line type="monotone" dataKey="lower" stroke="#475569" strokeDasharray="4 2" strokeWidth={1} dot={false} />
-                <Line type="monotone" dataKey="price" stroke="#60a5fa" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="upper" stroke="#94a3b8" strokeDasharray="4 2" strokeWidth={1.5} dot={false} />
+                <Line type="monotone" dataKey="lower" stroke="#94a3b8" strokeDasharray="4 2" strokeWidth={1.5} dot={false} />
+                <Line type="monotone" dataKey="price" stroke="#38bdf8" strokeWidth={2.5} dot={false} />
               </ComposedChart>
             }
             rules={[
