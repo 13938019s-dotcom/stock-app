@@ -163,7 +163,7 @@ export function TutorialPanel() {
             formula="MA5 / MA20 / MA60"
             summary="過去 N 天收盤價的平均值，用來過濾短期雜訊、判斷趨勢方向。短天期均線（如 MA5）反應較快，長天期（如 MA60）反應較慢但較穩定。"
             chart={
-              <LineChart data={maData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+              <LineChart data={maData} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
                 <XAxis dataKey="i" type="number" domain={[0, 'dataMax']} hide />
                 <YAxis hide domain={['dataMin - 5', 'dataMax + 5']} />
                 <ReferenceLine x={maCrossIdx} stroke="#f59e0b" strokeDasharray="3 3" label={{ value: '黃金交叉', position: 'top', fill: '#f59e0b', fontSize: 10 }} />
@@ -186,7 +186,7 @@ export function TutorialPanel() {
             formula="EMA12 - EMA26，再取9日 EMA 為 Signal"
             summary="用兩條不同天期 EMA 的差值（DIF/MACD 線）判斷動能轉折，再搭配訊號線（Signal）與柱狀圖（Histogram）觀察動能強弱變化。"
             chart={
-              <ComposedChart data={macdData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+              <ComposedChart data={macdData} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
                 <XAxis dataKey="i" type="number" domain={[0, 'dataMax']} hide />
                 <YAxis hide domain={['dataMin - 1', 'dataMax + 1']} />
                 <ReferenceLine y={0} stroke="#334155" />
@@ -217,7 +217,7 @@ export function TutorialPanel() {
             formula="RSV = (收盤 - 9日最低) ÷ (9日最高 - 9日最低) × 100"
             summary="比較目前收盤價落在近期高低區間的相對位置，RSV 經過兩次平滑後得到 K、D 值，數值介於 0～100，用來判斷短線超買超賣與動能轉折。"
             chart={
-              <LineChart data={kdData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+              <LineChart data={kdData} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
                 <XAxis dataKey="i" type="number" domain={[0, 'dataMax']} hide />
                 <YAxis hide domain={[0, 100]} />
                 <ReferenceArea y1={0} y2={20} fill="#22c55e" fillOpacity={0.07} />
@@ -242,7 +242,7 @@ export function TutorialPanel() {
             formula="RSI = 100 - 100 / (1 + 平均漲幅 ÷ 平均跌幅)"
             summary="衡量一段期間內上漲力道占整體波動的比例，0～100 之間。數值越高代表買方力道越強，越低代表賣方力道越強。"
             chart={
-              <LineChart data={rsiData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+              <LineChart data={rsiData} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
                 <XAxis dataKey="i" type="number" domain={[0, 'dataMax']} hide />
                 <YAxis hide domain={[0, 100]} />
                 <ReferenceArea y1={0} y2={30} fill="#22c55e" fillOpacity={0.07} />
@@ -269,7 +269,7 @@ export function TutorialPanel() {
             formula="中線 = MA20，上下軌 = 中線 ± 2 倍標準差"
             summary="用統計學的標準差衡量股價的正常波動區間。通道變窄代表波動縮小（變盤前兆），通道變寬代表波動放大、趨勢明確。"
             chart={
-              <ComposedChart data={bbData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+              <ComposedChart data={bbData} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
                 <XAxis dataKey="i" type="number" domain={[0, 'dataMax']} hide />
                 <YAxis hide domain={['dataMin - 3', 'dataMax + 3']} />
                 <ReferenceArea x1={squeezeStart} x2={squeezeEnd} fill="#f59e0b" fillOpacity={0.08} />
@@ -293,7 +293,7 @@ export function TutorialPanel() {
             formula="BIAS = (股價 - MA) ÷ MA × 100%"
             summary="衡量股價偏離均線的程度。正值代表股價在均線之上（偏熱），負值代表在均線之下（偏冷），數值越極端代表偏離越大。"
             chart={
-              <LineChart data={biasData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+              <LineChart data={biasData} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
                 <XAxis dataKey="i" type="number" domain={[0, 'dataMax']} hide />
                 <YAxis hide domain={[-15, 15]} />
                 <ReferenceLine y={0} stroke="#334155" />
@@ -317,7 +317,7 @@ export function TutorialPanel() {
           title="成交量 Volume"
           summary="價格的變化要搭配成交量一起判讀才有意義：「有量才有價」，沒有量能支撐的漲跌通常不持久。本範例比較「價漲量增」與「價漲量縮」兩種情境。"
           chart={
-            <ComposedChart data={volData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+            <ComposedChart data={volData} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
               <XAxis dataKey="i" type="number" domain={[0, 'dataMax']} hide />
               <YAxis hide yAxisId="price" domain={['dataMin - 3', 'dataMax + 3']} />
               <YAxis hide yAxisId="vol" orientation="right" domain={[0, 80]} />
